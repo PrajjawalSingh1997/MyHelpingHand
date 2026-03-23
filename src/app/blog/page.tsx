@@ -3,7 +3,7 @@ import { useBlogStore } from "@/store/stores";
 import { useSyncBlogToTask } from "@/hooks/use-sync";
 import { BlogStatus, BlogPlatform } from "@/lib/types";
 import { useState } from "react";
-import { Pencil, X, ExternalLink, Clock, Hash, FileText, Plus, Eye } from "lucide-react";
+import { Pencil, X, ExternalLink, Clock, Hash, FileText, Plus, Eye, Trash2 } from "lucide-react";
 
 const statusColors: Record<BlogStatus, string> = {
   to_write: "bg-[#FF6B6B]/15 text-[#FF6B6B]",
@@ -39,6 +39,7 @@ export default function BlogPage() {
   const blogs = useBlogStore((s) => s.blogs);
   const updateBlog = useBlogStore((s) => s.updateBlog);
   const updateBlogWithSync = useSyncBlogToTask();
+  const deleteBlog = useBlogStore((s) => s.deleteBlog);
   const [view, setView] = useState<"kanban" | "list">("kanban");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
@@ -306,6 +307,7 @@ export default function BlogPage() {
                         <div className="flex gap-1">
                           <button onClick={() => startEditing(blog.id)} className="rounded px-2 py-1 text-[10px] text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#6C5CE7]"><Pencil className="h-3 w-3" /></button>
                           <button onClick={() => setPreviewId(previewId === blog.id ? null : blog.id)} className="rounded px-2 py-1 text-[10px] text-[#64748B] hover:bg-[#1E1E2E] hover:text-white"><Eye className="h-3 w-3" /></button>
+                          <button onClick={() => { if (confirm("Delete this blog?")) deleteBlog(blog.id); }} className="rounded px-2 py-1 text-[10px] text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#FF6B6B]"><Trash2 className="h-3 w-3" /></button>
                         </div>
                         <button
                           onClick={() => updateBlogWithSync(blog.id, blog.scheduledDay, nextStatus(blog.status))}
@@ -359,6 +361,7 @@ export default function BlogPage() {
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => startEditing(blog.id)} className="rounded p-1 text-[#64748B] hover:text-[#6C5CE7]"><Pencil className="h-3.5 w-3.5" /></button>
                       <button onClick={() => setPreviewId(previewId === blog.id ? null : blog.id)} className="rounded p-1 text-[#64748B] hover:text-white"><Eye className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => { if (confirm("Delete this blog?")) deleteBlog(blog.id); }} className="rounded p-1 text-[#64748B] hover:text-[#FF6B6B]"><Trash2 className="h-3.5 w-3.5" /></button>
                       {blog.publishedUrl && (
                         <a href={blog.publishedUrl} target="_blank" rel="noopener noreferrer" className="rounded p-1 text-[#64748B] hover:text-[#6C5CE7]">
                           <ExternalLink className="h-3.5 w-3.5" />

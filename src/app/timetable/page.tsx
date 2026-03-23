@@ -1,8 +1,9 @@
 "use client";
-import { planA, planB, planC, weeklyRhythm } from "@/data/timetables";
+import { weeklyRhythm } from "@/data/timetables";
+import { useTimetableStore } from "@/store/stores";
 import { useState, useEffect, useCallback } from "react";
 import { TimeBlock } from "@/lib/types";
-import { Check, RotateCcw } from "lucide-react";
+import { Check, RotateCcw, Pencil, Trash2, Plus, X } from "lucide-react";
 
 /**
  * Timetable reset logic:
@@ -56,12 +57,38 @@ function TimelineView({
 }: {
   blocks: TimeBlock[];
   label: string;
-  planKey: string;
+  planKey: "A" | "B" | "C";
   checks: Record<string, boolean>;
   onToggle: (key: string) => void;
 }) {
   const checkedCount = blocks.filter((_, i) => checks[`${planKey}_${i}`]).length;
   const pct = blocks.length > 0 ? Math.round((checkedCount / blocks.length) * 100) : 0;
+
+  const { updateBlock, deleteBlock, addBlock } = useTimetableStore();
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<TimeBlock>({ time: "", emoji: "", name: "", activity: "", duration: "" });
+  const [isAdding, setIsAdding] = useState(false);
+
+  const startEdit = (index: number, block: TimeBlock) => {
+    setEditingIndex(index);
+    setEditForm(block);
+    setIsAdding(false);
+  };
+  const saveEdit = () => {
+    if (editingIndex !== null) {
+      updateBlock(planKey, editingIndex, editForm);
+      setEditingIndex(null);
+    }
+  };
+  const startAdd = () => {
+    setIsAdding(true);
+    setEditingIndex(null);
+    setEditForm({ time: "00:00 AM – 00:00 AM", emoji: "📌", name: "New Block", activity: "Description here", duration: "1 hr" });
+  };
+  const saveAdd = () => {
+    addBlock(planKey, editForm);
+    setIsAdding(false);
+  };
 
   return (
     <div className="card">
@@ -76,19 +103,54 @@ function TimelineView({
       </div>
       <div className="space-y-2">
         {blocks.map((block, i) => {
+          if (editingIndex === i) {
+            return (
+              <div key={i} className="rounded-lg bg-[#0A0A0F] p-4 space-y-3 ring-1 ring-[#2D2D3F]">
+                <div className="flex gap-2">
+                  <div className="w-16">
+                    <label className="text-[10px] text-[#64748B]">Emoji</label>
+                    <input value={editForm.emoji} onChange={e => setEditForm({...editForm, emoji: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-sm text-center text-white focus:border-[#6C5CE7] focus:outline-none" />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-[10px] text-[#64748B]">Block Name</label>
+                    <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-sm font-medium text-white focus:border-[#6C5CE7] focus:outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] text-[#64748B]">Activity details</label>
+                  <input value={editForm.activity} onChange={e => setEditForm({...editForm, activity: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-xs text-[#E2E8F0] focus:border-[#6C5CE7] focus:outline-none" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="text-[10px] text-[#64748B]">Time</label>
+                    <input value={editForm.time} onChange={e => setEditForm({...editForm, time: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-xs text-[#E2E8F0] focus:border-[#6C5CE7] focus:outline-none" placeholder="12:00 PM – 1:30 PM" />
+                  </div>
+                  <div className="w-24">
+                    <label className="text-[10px] text-[#64748B]">Duration</label>
+                    <input value={editForm.duration} onChange={e => setEditForm({...editForm, duration: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-xs text-[#E2E8F0] focus:border-[#6C5CE7] focus:outline-none" />
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button onClick={saveEdit} className="rounded-lg bg-[#00B894] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#00A381]">Save</button>
+                  <button onClick={() => setEditingIndex(null)} className="rounded-lg bg-[#2D2D3F] px-4 py-1.5 text-xs font-medium text-[#64748B] hover:text-white">Cancel</button>
+                </div>
+              </div>
+            );
+          }
+
           const key = `${planKey}_${i}`;
           const isChecked = checks[key] || false;
           // Check if current time is in this block's range
           const now = new Date();
           const currentHour = now.getHours() + now.getMinutes() / 60;
-          const blockStart = parseTimeToHours(block.time.split("–")[0].trim());
-          const blockEnd = parseTimeToHours(block.time.split("–")[1].trim());
+          const blockStart = parseTimeToHours(block.time.split("–")[0]?.trim() || "0:00 AM");
+          const blockEnd = parseTimeToHours(block.time.split("–")[1]?.trim() || "0:00 AM");
           const isActive = currentHour >= blockStart && currentHour < blockEnd;
 
           return (
             <div
               key={i}
-              className={`flex items-center gap-4 rounded-lg p-3 transition-all ${
+              className={`group flex items-center gap-4 rounded-lg p-3 transition-all ${
                 isActive
                   ? "bg-[#6C5CE7]/10 ring-1 ring-[#6C5CE7]"
                   : isChecked
@@ -122,9 +184,58 @@ function TimelineView({
                 </p>
                 <p className="text-[10px] text-[#64748B]">{block.duration}</p>
               </div>
+
+              {/* Edit/Delete Actions */}
+              <div className="flex flex-col items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 pl-2 border-l border-[#2D2D3F]">
+                <button onClick={() => startEdit(i, block)} className="rounded p-1 text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#6C5CE7]" title="Edit">
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => { if (confirm("Delete this block?")) deleteBlock(planKey, i); }} className="rounded p-1 text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#FF6B6B]" title="Delete">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           );
         })}
+
+        {/* Add Block */}
+        {isAdding ? (
+          <div className="rounded-lg bg-[#0A0A0F] p-4 space-y-3 ring-1 ring-[#6C5CE7]/50 mt-4">
+            <h4 className="text-sm font-semibold text-[#6C5CE7]">Add New Time Block</h4>
+            <div className="flex gap-2">
+              <div className="w-16">
+                <label className="text-[10px] text-[#64748B]">Emoji</label>
+                <input value={editForm.emoji} onChange={e => setEditForm({...editForm, emoji: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-sm text-center text-white focus:border-[#6C5CE7] focus:outline-none" />
+              </div>
+              <div className="flex-1">
+                <label className="text-[10px] text-[#64748B]">Block Name</label>
+                <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-sm font-medium text-white focus:border-[#6C5CE7] focus:outline-none" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] text-[#64748B]">Activity details</label>
+              <input value={editForm.activity} onChange={e => setEditForm({...editForm, activity: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-xs text-[#E2E8F0] focus:border-[#6C5CE7] focus:outline-none" />
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="text-[10px] text-[#64748B]">Time</label>
+                <input value={editForm.time} onChange={e => setEditForm({...editForm, time: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-xs text-[#E2E8F0] focus:border-[#6C5CE7] focus:outline-none" placeholder="12:00 PM – 1:30 PM" />
+              </div>
+              <div className="w-24">
+                <label className="text-[10px] text-[#64748B]">Duration</label>
+                <input value={editForm.duration} onChange={e => setEditForm({...editForm, duration: e.target.value})} className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-1.5 text-xs text-[#E2E8F0] focus:border-[#6C5CE7] focus:outline-none" />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button onClick={saveAdd} className="rounded-lg bg-[#6C5CE7] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#5a4add]">Add Block</button>
+              <button onClick={() => setIsAdding(false)} className="rounded-lg bg-[#2D2D3F] px-4 py-1.5 text-xs font-medium text-[#64748B] hover:text-white">Cancel</button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={startAdd} className="mt-2 w-full flex items-center justify-center gap-2 rounded-lg border border-dashed border-[#2D2D3F] bg-[#0A0A0F]/50 p-3 text-sm text-[#64748B] transition-all hover:border-[#6C5CE7] hover:text-[#6C5CE7]">
+            <Plus className="h-4 w-4" /> Add Block
+          </button>
+        )}
       </div>
     </div>
   );
@@ -132,6 +243,7 @@ function TimelineView({
 
 // Parse "12:30 PM" → decimal hours (12.5)
 function parseTimeToHours(timeStr: string): number {
+  if (!timeStr) return 0;
   const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
   if (!match) return 0;
   let hours = parseInt(match[1]);
@@ -146,6 +258,7 @@ export default function TimetablePage() {
   const [tab, setTab] = useState<"A" | "B" | "C" | "weekly">("A");
   const [checkState, setCheckState] = useState<TimetableState>({ date: "", checked: {} });
   const [mounted, setMounted] = useState(false);
+  const { planA, planB, planC } = useTimetableStore();
 
   useEffect(() => {
     setCheckState(loadChecks());
@@ -217,7 +330,7 @@ export default function TimetablePage() {
 
       {mounted && (
         <>
-          {tab === "A" && <TimelineView blocks={planA} label="📘 Plan A — Standard Day (12 PM – 5 AM)" planKey="A" checks={checkState.checked} onToggle={toggleCheck} />}
+          {tab === "A" && <TimelineView blocks={planA} label="📘 Plan A — Standard Day" planKey="A" checks={checkState.checked} onToggle={toggleCheck} />}
           {tab === "B" && <TimelineView blocks={planB} label="📙 Plan B — Heavy Coding Day" planKey="B" checks={checkState.checked} onToggle={toggleCheck} />}
           {tab === "C" && <TimelineView blocks={planC} label="📗 Plan C — Content & Freelancing Day" planKey="C" checks={checkState.checked} onToggle={toggleCheck} />}
         </>

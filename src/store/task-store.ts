@@ -10,6 +10,7 @@ interface TaskState {
   toggleTask: (dayNumber: number, taskId: string) => void;
   skipTask: (dayNumber: number, taskId: string) => void;
   editTask: (dayNumber: number, taskId: string, updates: Partial<DayTask>) => void;
+  deleteTask: (dayNumber: number, taskId: string) => void;
   postponeTask: (fromDay: number, taskId: string, toDay: number) => void;
   updateNotes: (dayNumber: number, notes: string) => void;
   updateRentlyfHours: (dayNumber: number, hours: number) => void;
@@ -59,6 +60,15 @@ export const useTaskStore = create<TaskState>()(
           days: s.days.map((d) =>
             d.dayNumber === dayNumber
               ? { ...d, tasks: d.tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)) }
+              : d
+          ),
+        })),
+
+      deleteTask: (dayNumber, taskId) =>
+        set((s) => ({
+          days: s.days.map((d) =>
+            d.dayNumber === dayNumber
+              ? { ...d, tasks: d.tasks.filter((t) => t.id !== taskId) }
               : d
           ),
         })),

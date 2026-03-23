@@ -4,12 +4,14 @@ import { persist } from "zustand/middleware";
 import { BlogPost, FreelanceProposal, FreelanceProject, RentlyfLog, ScoreCardMetric, LearningTopic, UserSettings } from "@/lib/types";
 import { defaultBlogs } from "@/data/blogs";
 import { defaultLearningTopics } from "@/data/learning";
+import { planA as defaultPlanA, planB as defaultPlanB, planC as defaultPlanC } from "@/data/timetables";
 import { month1Targets, month2Targets, month3Targets } from "@/data/goals";
 
 /* ─── Blog Store ─── */
 interface BlogState {
   blogs: BlogPost[];
   updateBlog: (id: string, updates: Partial<BlogPost>) => void;
+  deleteBlog: (id: string) => void;
   resetBlogs: () => void;
 }
 export const useBlogStore = create<BlogState>()(
@@ -17,6 +19,7 @@ export const useBlogStore = create<BlogState>()(
     (set) => ({
       blogs: defaultBlogs,
       updateBlog: (id, updates) => set((s) => ({ blogs: s.blogs.map((b) => (b.id === id ? { ...b, ...updates } : b)) })),
+      deleteBlog: (id) => set((s) => ({ blogs: s.blogs.filter((b) => b.id !== id) })),
       resetBlogs: () => set({ blogs: defaultBlogs }),
     }),
     { name: "gt_blogs" }
@@ -107,6 +110,7 @@ export const useGoalsStore = create<GoalsState>()(
 interface LearningState {
   topics: LearningTopic[];
   updateTopic: (id: string, updates: Partial<LearningTopic>) => void;
+  deleteTopic: (id: string) => void;
   resetTopics: () => void;
 }
 export const useLearningStore = create<LearningState>()(
@@ -114,6 +118,7 @@ export const useLearningStore = create<LearningState>()(
     (set) => ({
       topics: defaultLearningTopics,
       updateTopic: (id, updates) => set((s) => ({ topics: s.topics.map((t) => (t.id === id ? { ...t, ...updates } : t)) })),
+      deleteTopic: (id) => set((s) => ({ topics: s.topics.filter((t) => t.id !== id) })),
       resetTopics: () => set({ topics: defaultLearningTopics }),
     }),
     { name: "gt_learning" }
@@ -139,5 +144,49 @@ export const useSettingsStore = create<SettingsState>()(
       updateSettings: (updates) => set((s) => ({ settings: { ...s.settings, ...updates } })),
     }),
     { name: "gt_settings" }
+  )
+);
+
+/* ─── Timetable Store ─── */
+import { TimeBlock } from "@/lib/types";
+
+interface TimetableStore {
+  planA: TimeBlock[];
+  planB: TimeBlock[];
+  planC: TimeBlock[];
+  addBlock: (planKey: "A" | "B" | "C", block: TimeBlock) => void;
+  updateBlock: (planKey: "A" | "B" | "C", index: number, updates: Partial<TimeBlock>) => void;
+  deleteBlock: (planKey: "A" | "B" | "C", index: number) => void;
+  resetTimetable: () => void;
+}
+
+export const useTimetableStore = create<TimetableStore>()(
+  persist(
+    (set) => ({
+      planA: defaultPlanA,
+      planB: defaultPlanB,
+      planC: defaultPlanC,
+      addBlock: (planKey, block) =>
+        set((s) => {
+          const key = `plan${planKey}` as "planA" | "planB" | "planC";
+          return { [key]: [...s[key], block] };
+        }),
+      updateBlock: (planKey, index, updates) =>
+        set((s) => {
+          const key = `plan${planKey}` as "planA" | "planB" | "planC";
+          const newArray = [...s[key]];
+          newArray[index] = { ...newArray[index], ...updates };
+          return { [key]: newArray };
+        }),
+      deleteBlock: (planKey, index) =>
+        set((s) => {
+          const key = `plan${planKey}` as "planA" | "planB" | "planC";
+          const newArray = [...s[key]];
+          newArray.splice(index, 1);
+          return { [key]: newArray };
+        }),
+      resetTimetable: () => set({ planA: defaultPlanA, planB: defaultPlanB, planC: defaultPlanC }),
+    }),
+    { name: "gt_timetable_blocks" }
   )
 );

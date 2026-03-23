@@ -2,7 +2,7 @@
 import { useTaskStore } from "@/store/task-store";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Copy, Check, SkipForward, Pencil, ArrowRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy, Check, SkipForward, Pencil, ArrowRight, X, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useSyncRentlyfHours, useSyncBlogStatus } from "@/hooks/use-sync";
 
@@ -23,6 +23,7 @@ function TodayContent({ dayNumber }: { dayNumber: number }) {
   const rawToggleTask = useTaskStore((s) => s.toggleTask);
   const skipTask = useTaskStore((s) => s.skipTask);
   const editTask = useTaskStore((s) => s.editTask);
+  const deleteTask = useTaskStore((s) => s.deleteTask);
   const postponeTask = useTaskStore((s) => s.postponeTask);
   const updateNotes = useTaskStore((s) => s.updateNotes);
   const syncRentlyfHours = useSyncRentlyfHours();
@@ -172,9 +173,9 @@ function TodayContent({ dayNumber }: { dayNumber: number }) {
                           className="mt-1 w-full rounded-lg border border-[#2D2D3F] bg-[#14141F] px-3 py-2 text-sm text-white focus:border-[#6C5CE7] focus:outline-none"
                         />
                       </div>
-                      {(task.postContent || task.category === "linkedin" || task.category === "twitter") && (
+                      {(task.postContent || task.category === "linkedin" || task.category === "twitter" || task.category === "learning" || task.category === "blog") && (
                         <div>
-                          <label className="text-[10px] text-[#64748B]">Post Content (editable)</label>
+                          <label className="text-[10px] text-[#64748B]">Content / Notes (editable)</label>
                           <textarea
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
@@ -229,7 +230,7 @@ function TodayContent({ dayNumber }: { dayNumber: number }) {
                                 onClick={() => copyPost(task.id, task.postContent!)}
                                 className="flex items-center gap-1 rounded-md bg-[#6C5CE7]/15 px-2 py-1 text-[10px] font-medium text-[#6C5CE7] transition-all hover:bg-[#6C5CE7]/25"
                               >
-                                {copiedId === task.id ? <><Check className="h-3 w-3" /> Copied!</> : <><Copy className="h-3 w-3" /> Copy Post</>}
+                                {copiedId === task.id ? <><Check className="h-3 w-3" /> Copied!</> : <><Copy className="h-3 w-3" /> Copy {task.category === "linkedin" || task.category === "twitter" ? "Post" : "Content"}</>}
                               </button>
                             </div>
                           </div>
@@ -239,6 +240,9 @@ function TodayContent({ dayNumber }: { dayNumber: number }) {
                       <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-all group-hover:opacity-100">
                         <button onClick={() => startEditing(task.id)} className="rounded p-1 text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#6C5CE7]" title="Edit task">
                           <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button onClick={() => { if (confirm("Delete this task?")) deleteTask(day.dayNumber, task.id); }} className="rounded p-1 text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#FF6B6B]" title="Delete task">
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                         <button onClick={() => { setPostponeId(task.id); setPostponeDay(""); }} className="rounded p-1 text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#FDCB6E]" title="Postpone task">
                           <ArrowRight className="h-3.5 w-3.5" />
