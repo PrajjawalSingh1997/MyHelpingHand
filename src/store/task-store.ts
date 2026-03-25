@@ -20,7 +20,7 @@ interface TaskState {
   resetAll: () => void;
 }
 
-const START_DATE = new Date("2026-03-24");
+const START_DATE = new Date("2026-03-26");
 
 function calcCurrentDay(): number {
   const now = new Date();
