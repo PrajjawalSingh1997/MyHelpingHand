@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useTaskStore } from "@/store/task-store";
 import { format } from "date-fns";
 import { Flame } from "lucide-react";
@@ -7,11 +8,28 @@ export function TopBar() {
   const currentDay = useTaskStore((s) => s.getCurrentDayNumber());
   const streak = useTaskStore((s) => s.getStreak());
 
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    // Auto-migrate stale offline dates to the new March 26th baseline
+    const days = useTaskStore.getState().days;
+    if (days[0]?.date === "2026-03-24") {
+      useTaskStore.setState((s) => ({
+        days: s.days.map((d) => {
+          const newDate = new Date("2026-03-26");
+          newDate.setDate(newDate.getDate() + d.dayNumber - 1);
+          return { ...d, date: newDate.toISOString().split('T')[0] };
+        })
+      }));
+    }
+  }, []);
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[#2D2D3F] bg-[#0A0A0F]/80 px-6 backdrop-blur-md">
       <div className="flex items-center gap-3">
         <span className="text-sm text-[#64748B]">
-          {format(new Date(), "EEEE, MMMM d, yyyy")}
+          {mounted ? format(new Date(), "EEEE, MMMM d, yyyy") : ""}
         </span>
       </div>
 

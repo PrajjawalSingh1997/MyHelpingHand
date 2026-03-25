@@ -2,7 +2,7 @@
 import { DayPlan, DayTask, PlanType } from "@/lib/types";
 import { addDays, format } from "date-fns";
 
-const START_DATE = "2026-03-24"; // Day 1
+const START_DATE = "2026-03-26"; // Day 1
 
 function d(dayNumber: number): string {
   return format(addDays(new Date(START_DATE), dayNumber - 1), "yyyy-MM-dd");
