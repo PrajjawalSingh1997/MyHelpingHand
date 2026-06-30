@@ -3,37 +3,51 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  CalendarCheck,
-  Calendar,
-  PenTool,
-  BarChart3,
-  FileText,
-  Briefcase,
-  Building2,
-  Target,
-  Clock,
-  BookOpen,
-  Settings,
-  Rocket,
+  LayoutDashboard, CalendarCheck, Calendar, TrendingUp, Clock, Target,
+  Heart, DollarSign, Users, FileText, PenSquare, BookOpen, Briefcase,
+  Code2, Sparkles, Settings, ShieldCheck, Rocket,
 } from "lucide-react";
 
-const navItems = [
-  { href: "/", icon: LayoutDashboard, label: "Dashboard", emoji: "🏠" },
-  { href: "/today", icon: CalendarCheck, label: "Today", emoji: "📅" },
-  { href: "/calendar", icon: Calendar, label: "Calendar", emoji: "📆" },
-  { href: "/content", icon: PenTool, label: "Content Hub", emoji: "✍️" },
-  { href: "/progress", icon: BarChart3, label: "Progress", emoji: "📊" },
-  { href: "/blog", icon: FileText, label: "Blog Manager", emoji: "📝" },
-  { href: "/freelance", icon: Briefcase, label: "Freelance", emoji: "💼" },
-  { href: "/rentlyf", icon: Building2, label: "Rentlyf Log", emoji: "🏠" },
-  { href: "/goals", icon: Target, label: "Goals", emoji: "🎯" },
-  { href: "/timetable", icon: Clock, label: "Timetable", emoji: "⏰" },
-  { href: "/learning", icon: BookOpen, label: "Learning", emoji: "📚" },
-  { href: "/settings", icon: Settings, label: "Settings", emoji: "⚙️" },
-];
+const ICON_MAP: Record<string, React.ElementType> = {
+  LayoutDashboard, CalendarCheck, Calendar, TrendingUp, Clock, Target,
+  Heart, DollarSign, Users, FileText, PenSquare, BookOpen, Briefcase,
+  Code2, Sparkles, Settings, ShieldCheck,
+};
 
-export function Sidebar() {
+const SLUG_HREF: Record<string, string> = {
+  dashboard: '/',
+  today:     '/today',
+  calendar:  '/calendar',
+  progress:  '/progress',
+  timetable: '/timetable',
+  goals:     '/goals',
+  health:    '/health',
+  finance:   '/finance',
+  crm:       '/crm',
+  content:   '/content',
+  blog:      '/blog',
+  learning:  '/learning',
+  freelance: '/freelance',
+  rentlyf:   '/rentlyf',
+  prompt:    '/prompt',
+  settings:  '/settings',
+};
+
+interface Module {
+  id: string
+  name: string
+  slug: string
+  icon: string | null
+  sort_order: number
+}
+
+interface SidebarProps {
+  modules: Module[]
+  displayName: string
+  isAdmin: boolean
+}
+
+export function Sidebar({ modules, displayName, isAdmin }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -41,18 +55,21 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2 border-b border-[#2D2D3F] px-5 py-4">
         <Rocket className="h-6 w-6 text-[#6C5CE7]" />
-        <span className="text-lg font-bold text-white">Growth Tracker</span>
+        <span className="text-lg font-bold text-white">Life OS</span>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+          {modules.map((mod) => {
+            const href = SLUG_HREF[mod.slug] ?? `/${mod.slug}`
+            const Icon = ICON_MAP[mod.icon ?? ''] ?? LayoutDashboard
+            const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
+
             return (
-              <li key={item.href}>
+              <li key={mod.id}>
                 <Link
-                  href={item.href}
+                  href={href}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                     isActive
@@ -60,19 +77,37 @@ export function Sidebar() {
                       : "text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#E2E8F0]"
                   )}
                 >
-                  <span className="text-base">{item.emoji}</span>
-                  <span>{item.label}</span>
+                  <Icon size={16} />
+                  <span>{mod.name}</span>
                 </Link>
               </li>
-            );
+            )
           })}
+
+          {/* Admin panel — only visible to super_admin */}
+          {isAdmin && (
+            <li>
+              <Link
+                href="/admin"
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  pathname.startsWith('/admin')
+                    ? "bg-[#FDCB6E]/15 text-[#FDCB6E]"
+                    : "text-[#64748B] hover:bg-[#1E1E2E] hover:text-[#E2E8F0]"
+                )}
+              >
+                <ShieldCheck size={16} />
+                <span>Admin Panel</span>
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
 
       {/* Bottom */}
       <div className="border-t border-[#2D2D3F] px-5 py-3">
-        <p className="text-xs text-[#64748B]">Prajjawal Singh</p>
-        <p className="text-[10px] text-[#64748B]/60">90-Day Growth Engine</p>
+        <p className="text-xs font-medium text-[#E2E8F0] truncate">{displayName}</p>
+        <p className="text-[10px] text-[#64748B]/60">Life OS v2</p>
       </div>
     </aside>
   );
