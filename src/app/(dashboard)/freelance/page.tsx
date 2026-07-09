@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Pencil, Trash2, Loader2, DollarSign } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { FreelanceProject } from '@/types/database'
 
 const STATUSES = ['lead', 'proposal', 'active', 'completed', 'cancelled'] as const
@@ -17,7 +18,7 @@ const PLATFORMS = ['Upwork', 'Fiverr', 'LinkedIn', 'Direct', 'Referral', 'Other'
 
 function ProjectForm({ initial, onSave, onCancel }: {
   initial?: Partial<FreelanceProject>
-  onSave: (p: Partial<FreelanceProject>) => void
+  onSave: (p: Partial<FreelanceProject>) => Promise<void>
   onCancel: () => void
 }) {
   const [f, setF] = useState({
@@ -31,6 +32,20 @@ function ProjectForm({ initial, onSave, onCancel }: {
     deadline: initial?.deadline ?? '',
     notes: initial?.notes ?? '',
   })
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+
+  const handleSave = async () => {
+    if (!f.title.trim()) { setError('Project title is required.'); return }
+    setSaving(true); setError('')
+    await onSave({
+      ...f,
+      budget: f.budget !== '' ? parseFloat(String(f.budget)) : null,
+      paid_amount: f.paid_amount !== '' ? parseFloat(String(f.paid_amount)) : null,
+    })
+    setSaving(false)
+  }
+
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
       <div className="flex gap-3">
@@ -73,12 +88,13 @@ function ProjectForm({ initial, onSave, onCancel }: {
         <label className="label">Notes</label>
         <textarea value={f.notes ?? ''} onChange={e => setF({ ...f, notes: e.target.value })} rows={2} className="input mt-1 w-full resize-none" />
       </div>
+      {error && <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
       <div className="flex gap-2">
-        <button onClick={() => onSave({
-          ...f,
-          budget: f.budget !== '' ? parseFloat(String(f.budget)) : null,
-          paid_amount: f.paid_amount !== '' ? parseFloat(String(f.paid_amount)) : null,
-        })} className="btn-primary text-sm">Save</button>
+        <button onClick={handleSave} disabled={saving}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
+          {saving && <Loader2 size={14} className="animate-spin" />}
+          {saving ? 'Saving…' : 'Save Project'}
+        </button>
         <button onClick={onCancel} className="btn-ghost text-sm">Cancel</button>
       </div>
     </div>
@@ -86,6 +102,7 @@ function ProjectForm({ initial, onSave, onCancel }: {
 }
 
 export default function FreelancePage() {
+  const { show } = useToast()
   const [projects, setProjects] = useState<FreelanceProject[]>([])
   const [loading, setLoading]   = useState(true)
   const [userId, setUserId]     = useState<string | null>(null)
@@ -109,23 +126,26 @@ export default function FreelancePage() {
   const addProject = async (partial: Partial<FreelanceProject>) => {
     if (!userId) return
     const supabase = createClient()
-    const { data } = await supabase.from('freelance_projects').insert({ ...partial, user_id: userId }).select().single() as { data: FreelanceProject | null }
-    if (data) setProjects(prev => [data, ...prev])
+    const { data, error } = await supabase.from('freelance_projects').insert({ ...partial, user_id: userId }).select().single() as { data: FreelanceProject | null; error: any }
+    if (data && !error) { setProjects(prev => [data, ...prev]); show('Project created!', 'success') }
+    else show('Failed to create project.', 'error')
     setAdding(false)
   }
 
   const updateProject = async (id: string, partial: Partial<FreelanceProject>) => {
     const supabase = createClient()
-    await supabase.from('freelance_projects').update(partial).eq('id', id)
-    setProjects(prev => prev.map(p => p.id === id ? { ...p, ...partial } : p))
+    const { error } = await supabase.from('freelance_projects').update(partial).eq('id', id)
+    if (!error) { setProjects(prev => prev.map(p => p.id === id ? { ...p, ...partial } : p)); show('Project updated!', 'success') }
+    else show('Failed to update project.', 'error')
     setEditingId(null)
   }
 
   const deleteProject = async (id: string) => {
     if (!confirm('Delete this project?')) return
     const supabase = createClient()
-    await supabase.from('freelance_projects').delete().eq('id', id)
-    setProjects(prev => prev.filter(p => p.id !== id))
+    const { error } = await supabase.from('freelance_projects').delete().eq('id', id)
+    if (!error) { setProjects(prev => prev.filter(p => p.id !== id)); show('Project deleted.', 'success') }
+    else show('Failed to delete project.', 'error')
   }
 
   if (loading) return (

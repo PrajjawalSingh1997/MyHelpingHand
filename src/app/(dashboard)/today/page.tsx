@@ -1,10 +1,10 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import {
   ChevronLeft, ChevronRight, Copy, Check, SkipForward,
-  Pencil, ArrowRight, X, Trash2, Loader2,
+  Pencil, ArrowRight, X, Trash2, Loader2, Plus, FileText,
 } from 'lucide-react'
 import { useActiveCycle } from '@/hooks/use-cycle'
 import { useDay } from '@/hooks/use-day'
@@ -22,18 +22,24 @@ const categoryMeta: Record<string, { label: string; emoji: string; color: string
   networking: { label: 'Networking',  emoji: '📱', color: 'bg-teal-500/15 text-teal-400' },
   health:     { label: 'Health',      emoji: '💪', color: 'bg-rose-500/15 text-rose-400' },
   personal:   { label: 'Personal',    emoji: '🌱', color: 'bg-lime-500/15 text-lime-400' },
+  general:    { label: 'General',     emoji: '📌', color: 'bg-gray-500/15 text-gray-400' },
 }
 
 export function TodayContent({ dayNumber }: { dayNumber: number }) {
-  const { day, loading, toggleTask, skipTask, editTask, deleteTask,
+  const { day, loading, toggleTask, skipTask, editTask, deleteTask, addTask,
           updateNotes, updateRentlyfHours, postponeTask, resolvedCycleId } = useDay(dayNumber)
 
-  const [copiedId,    setCopiedId]    = useState<string | null>(null)
-  const [editingId,   setEditingId]   = useState<string | null>(null)
-  const [editTitle,   setEditTitle]   = useState('')
-  const [editContent, setEditContent] = useState('')
-  const [postponeId,  setPostponeId]  = useState<string | null>(null)
-  const [postponeDay, setPostponeDay] = useState('')
+  const [copiedId,       setCopiedId]       = useState<string | null>(null)
+  const [editingId,      setEditingId]      = useState<string | null>(null)
+  const [editTitle,      setEditTitle]      = useState('')
+  const [editContent,    setEditContent]    = useState('')
+  const [postponeId,     setPostponeId]     = useState<string | null>(null)
+  const [postponeDay,    setPostponeDay]    = useState('')
+  const [quickTaskOpen,  setQuickTaskOpen]  = useState(false)
+  const [quickTaskTitle, setQuickTaskTitle] = useState('')
+  const [quickTaskSaving, setQuickTaskSaving] = useState(false)
+  const [notesSaving,    setNotesSaving]    = useState(false)
+  const notesTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   if (loading) return (
     <div className="flex items-center justify-center py-24">
@@ -41,16 +47,23 @@ export function TodayContent({ dayNumber }: { dayNumber: number }) {
     </div>
   )
 
-  if (!day) return (
-    <div className="space-y-4">
-      <EmptyCycle />
-      <div className="text-center">
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          Or this day doesn&apos;t exist in your cycle yet.
-        </p>
-      </div>
-    </div>
-  )
+  if (!day) {
+    if (resolvedCycleId) {
+      return (
+        <div className="card py-12 text-center">
+          <FileText size={36} className="mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
+          <h3 className="font-semibold" style={{ color: 'var(--text)' }}>Day not imported yet</h3>
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
+            This day doesn&apos;t exist in your active cycle. Import it via the Prompt page.
+          </p>
+          <Link href="/prompt" className="mt-4 inline-block text-sm font-medium" style={{ color: 'var(--accent)' }}>
+            Go to Import →
+          </Link>
+        </div>
+      )
+    }
+    return <EmptyCycle />
+  }
 
   const done  = day.tasks.filter(t => t.status === 'completed').length
   const total = day.tasks.length
@@ -80,6 +93,15 @@ export function TodayContent({ dayNumber }: { dayNumber: number }) {
     if (!editingId) return
     await editTask(editingId, { title: editTitle, content: editContent || undefined })
     setEditingId(null)
+  }
+
+  const handleAddQuickTask = async () => {
+    if (!quickTaskTitle.trim()) return
+    setQuickTaskSaving(true)
+    await addTask(quickTaskTitle.trim(), 'general')
+    setQuickTaskTitle('')
+    setQuickTaskOpen(false)
+    setQuickTaskSaving(false)
   }
 
   const handlePostpone = async () => {
@@ -242,6 +264,34 @@ export function TodayContent({ dayNumber }: { dayNumber: number }) {
         )
       })}
 
+      {/* Quick Task */}
+      <div className="card">
+        {!quickTaskOpen ? (
+          <button onClick={() => setQuickTaskOpen(true)}
+            className="flex items-center gap-2 text-sm"
+            style={{ color: 'var(--accent)' }}>
+            <Plus size={16} /> Add Quick Task
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <input
+              autoFocus
+              value={quickTaskTitle}
+              onChange={e => setQuickTaskTitle(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleAddQuickTask(); if (e.key === 'Escape') setQuickTaskOpen(false) }}
+              placeholder="Task title…"
+              className="input flex-1 text-sm"
+            />
+            <button onClick={handleAddQuickTask} disabled={quickTaskSaving || !quickTaskTitle.trim()}
+              className="btn-primary text-sm" style={{ opacity: quickTaskSaving ? 0.6 : 1 }}>
+              {quickTaskSaving ? <Loader2 size={14} className="animate-spin" /> : 'Add'}
+            </button>
+            <button onClick={() => { setQuickTaskOpen(false); setQuickTaskTitle('') }}
+              className="btn-ghost text-sm"><X size={14} /></button>
+          </div>
+        )}
+      </div>
+
       {/* Rentlyf hours */}
       <div className="card">
         <h3 className="mb-2 text-sm font-semibold" style={{ color: 'var(--text)' }}>🏠 Rentlyf Hours Today</h3>
@@ -257,12 +307,27 @@ export function TodayContent({ dayNumber }: { dayNumber: number }) {
 
       {/* Notes */}
       <div className="card">
-        <h3 className="mb-2 text-sm font-semibold" style={{ color: 'var(--text)' }}>📝 Daily Notes</h3>
-        <textarea value={day.notes ?? ''} onChange={e => updateNotes(e.target.value)}
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>📝 Daily Notes</h3>
+          {notesSaving && <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Saving…</span>}
+        </div>
+        <textarea
+          key={day.id}
+          defaultValue={day.notes ?? ''}
+          onChange={e => {
+            const val = e.target.value
+            if (notesTimerRef.current) clearTimeout(notesTimerRef.current)
+            setNotesSaving(true)
+            notesTimerRef.current = setTimeout(async () => {
+              await updateNotes(val)
+              setNotesSaving(false)
+            }, 500)
+          }}
           placeholder="Jot down anything for today…"
           className="w-full rounded-lg p-3 text-sm outline-none"
           style={{ border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)' }}
-          rows={3} />
+          rows={3}
+        />
       </div>
 
       {/* Navigation */}

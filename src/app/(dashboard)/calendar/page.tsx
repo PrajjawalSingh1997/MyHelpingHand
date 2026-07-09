@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isSameMonth } from 'date-fns'
+import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isSameMonth, differenceInCalendarDays } from 'date-fns'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { EmptyCycle } from '@/components/ui/empty-cycle'
@@ -35,8 +35,8 @@ export default function CalendarPage() {
       setCycle(c)
 
       const today = new Date()
-      const start = new Date(c.start_date)
-      setCurrentDay(Math.min(Math.max(Math.floor((today.getTime() - start.getTime()) / 86400000) + 1, 1), 90))
+      const dayNum = differenceInCalendarDays(today, new Date(c.start_date)) + 1
+      setCurrentDay(Math.min(Math.max(dayNum, 1), 90))
 
       const { data: d } = await supabase
         .from('days').select('id, day_number, date, plan_type, tasks(status)')

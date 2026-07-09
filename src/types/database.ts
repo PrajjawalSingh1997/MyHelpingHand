@@ -37,6 +37,10 @@ export interface Database {
           bio: string | null
           role: UserRole
           avatar_url: string | null
+          linkedin_url: string | null
+          github_url: string | null
+          twitter_url: string | null
+          portfolio_url: string | null
           created_at: string
         }
         Insert: {
@@ -45,6 +49,10 @@ export interface Database {
           bio?: string | null
           role?: UserRole
           avatar_url?: string | null
+          linkedin_url?: string | null
+          github_url?: string | null
+          twitter_url?: string | null
+          portfolio_url?: string | null
           created_at?: string
         }
         Update: {
@@ -52,6 +60,10 @@ export interface Database {
           bio?: string | null
           role?: UserRole
           avatar_url?: string | null
+          linkedin_url?: string | null
+          github_url?: string | null
+          twitter_url?: string | null
+          portfolio_url?: string | null
         }
       }
       user_settings: {
@@ -64,6 +76,8 @@ export interface Database {
           timezone: string
           week_start: string
           debt_remaining: number
+          debt_total: number
+          weekly_review_checks: Json
           updated_at: string
         }
         Insert: {
@@ -75,6 +89,8 @@ export interface Database {
           timezone?: string
           week_start?: string
           debt_remaining?: number
+          debt_total?: number
+          weekly_review_checks?: Json
         }
         Update: {
           theme?: string
@@ -83,6 +99,8 @@ export interface Database {
           timezone?: string
           week_start?: string
           debt_remaining?: number
+          debt_total?: number
+          weekly_review_checks?: Json
           updated_at?: string
         }
       }
@@ -311,6 +329,7 @@ export interface Database {
           meditation_done: boolean
           skincare_done: boolean
           exercise_notes: string | null
+          exercise_minutes: number | null
           weight_kg: number | null
           water_glasses: number | null
           sleep_hours: number | null
@@ -327,6 +346,7 @@ export interface Database {
           meditation_done?: boolean
           skincare_done?: boolean
           exercise_notes?: string | null
+          exercise_minutes?: number | null
           weight_kg?: number | null
           water_glasses?: number | null
           sleep_hours?: number | null
@@ -339,6 +359,7 @@ export interface Database {
           meditation_done?: boolean
           skincare_done?: boolean
           exercise_notes?: string | null
+          exercise_minutes?: number | null
           weight_kg?: number | null
           water_glasses?: number | null
           sleep_hours?: number | null
@@ -459,6 +480,7 @@ export interface Database {
           tags: string | null
           url: string | null
           scheduled_date: string | null
+          pillar: string | null
           created_at: string
         }
         Insert: {
@@ -472,6 +494,7 @@ export interface Database {
           tags?: string | null
           url?: string | null
           scheduled_date?: string | null
+          pillar?: string | null
         }
         Update: {
           title?: string
@@ -482,6 +505,7 @@ export interface Database {
           tags?: string | null
           url?: string | null
           scheduled_date?: string | null
+          pillar?: string | null
         }
       }
       learning_resources: {
@@ -585,6 +609,117 @@ export interface Database {
           notes?: string | null
         }
       }
+      habits: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          emoji: string
+          color: string
+          category: string
+          frequency: string
+          is_active: boolean
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          emoji?: string
+          color?: string
+          category?: string
+          frequency?: string
+          is_active?: boolean
+          sort_order?: number
+        }
+        Update: {
+          name?: string
+          emoji?: string
+          color?: string
+          category?: string
+          frequency?: string
+          is_active?: boolean
+          sort_order?: number
+        }
+      }
+      habit_logs: {
+        Row: {
+          id: string
+          user_id: string
+          habit_id: string
+          date: string
+          done: boolean
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          habit_id: string
+          date: string
+          done?: boolean
+        }
+        Update: {
+          done?: boolean
+        }
+      }
+      brand_metrics: {
+        Row: {
+          id: string
+          user_id: string
+          week_of: string
+          followers: number
+          profile_views: number
+          search_appearances: number
+          post_impressions: number
+          connections: number
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          week_of: string
+          followers?: number
+          profile_views?: number
+          search_appearances?: number
+          post_impressions?: number
+          connections?: number
+        }
+        Update: {
+          week_of?: string
+          followers?: number
+          profile_views?: number
+          search_appearances?: number
+          post_impressions?: number
+          connections?: number
+        }
+      }
+      brand_profile_checklist: {
+        Row: {
+          user_id: string
+          checklist: Json
+        }
+        Insert: {
+          user_id: string
+          checklist?: Json
+        }
+        Update: {
+          checklist?: Json
+        }
+      }
+      brand_daily_actions: {
+        Row: {
+          user_id: string
+          date: string
+          actions_done: Json
+        }
+        Insert: {
+          user_id: string
+          date: string
+          actions_done?: Json
+        }
+        Update: {
+          actions_done?: Json
+        }
+      }
     }
     Functions: {
       is_super_admin: {
@@ -618,3 +753,7 @@ export type ContentPost        = Database['public']['Tables']['content_posts']['
 export type LearningResource   = Database['public']['Tables']['learning_resources']['Row']
 export type RentlyfLog         = Database['public']['Tables']['rentlyf_logs']['Row']
 export type FreelanceProject   = Database['public']['Tables']['freelance_projects']['Row']
+export type Habit              = Database['public']['Tables']['habits']['Row']
+export type HabitLog           = Database['public']['Tables']['habit_logs']['Row']
+export type BrandMetric        = Database['public']['Tables']['brand_metrics']['Row']
+export type BrandDailyAction   = Database['public']['Tables']['brand_daily_actions']['Row']

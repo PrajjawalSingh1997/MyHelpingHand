@@ -5,13 +5,13 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, CalendarCheck, Calendar, TrendingUp, Clock, Target,
   Heart, DollarSign, Users, FileText, PenSquare, BookOpen, Briefcase,
-  Code2, Sparkles, Settings, ShieldCheck, Rocket,
+  Code2, Sparkles, Settings, ShieldCheck, Rocket, CheckSquare,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   LayoutDashboard, CalendarCheck, Calendar, TrendingUp, Clock, Target,
   Heart, DollarSign, Users, FileText, PenSquare, BookOpen, Briefcase,
-  Code2, Sparkles, Settings, ShieldCheck,
+  Code2, Sparkles, Settings, ShieldCheck, CheckSquare,
 };
 
 const SLUG_HREF: Record<string, string> = {
@@ -29,6 +29,8 @@ const SLUG_HREF: Record<string, string> = {
   learning:  '/learning',
   freelance: '/freelance',
   rentlyf:   '/rentlyf',
+  habits:    '/habits',
+  brand:     '/brand',
   prompt:    '/prompt',
   settings:  '/settings',
 };
@@ -64,7 +66,9 @@ export function Sidebar({ modules, displayName, isAdmin }: SidebarProps) {
           {modules.map((mod) => {
             const href = SLUG_HREF[mod.slug] ?? `/${mod.slug}`
             const Icon = ICON_MAP[mod.icon ?? ''] ?? LayoutDashboard
-            const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
+            const isActive = pathname === href
+              || (href !== '/' && pathname.startsWith(href))
+              || (mod.slug === 'today' && pathname.startsWith('/day/'))
 
             return (
               <li key={mod.id}>

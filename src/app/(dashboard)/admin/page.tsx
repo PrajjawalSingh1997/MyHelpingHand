@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [settings, setSettings] = useState<UserModuleSetting[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [saving, setSaving]     = useState<string | null>(null)
+  const [enablingAll, setEnablingAll] = useState<Set<string>>(new Set())
   const [bulkMod, setBulkMod]   = useState<string>('')
   const [isAdmin, setIsAdmin]   = useState(false)
   const [search, setSearch]     = useState('')
@@ -55,9 +56,17 @@ export default function AdminPage() {
       const m = mRes.data as Module[] | null
       const s = sRes.data as UserModuleSetting[] | null
 
-      // Get emails from auth (admin only)
-      const { data: authUsers } = await supabase.auth.admin.listUsers() as { data: { users: { id: string; email: string }[] } | null }
-      const emailMap = new Map((authUsers?.users ?? []).map(u => [u.id, u.email]))
+      // Fetch emails via server-side API route (requires SUPABASE_SERVICE_ROLE_KEY on server)
+      let emailMap = new Map<string, string>()
+      try {
+        const res = await fetch('/api/admin/users')
+        if (res.ok) {
+          const json = await res.json()
+          emailMap = new Map((json.users ?? []).map((u: { id: string; email: string }) => [u.id, u.email]))
+        }
+      } catch {
+        // silently fall back to 'unknown@email.com' if API is unavailable
+      }
 
       setUsers((u ?? []).map(row => ({ ...row, email: emailMap.get(row.id) ?? 'unknown@email.com' })))
       setModules(m ?? [])
@@ -92,6 +101,7 @@ export default function AdminPage() {
   }
 
   const enableAllForUser = async (userId: string) => {
+    setEnablingAll(prev => new Set(prev).add(userId))
     const supabase = createClient()
     await supabase.from('user_module_settings').upsert(
       modules.map(m => ({ user_id: userId, module_id: m.id, is_enabled: true })),
@@ -101,6 +111,7 @@ export default function AdminPage() {
       const without = prev.filter(s => s.user_id !== userId)
       return [...without, ...modules.map(m => ({ user_id: userId, module_id: m.id, is_enabled: true }))]
     })
+    setEnablingAll(prev => { const next = new Set(prev); next.delete(userId); return next })
   }
 
   const bulkEnable = async () => {
@@ -236,7 +247,9 @@ export default function AdminPage() {
                   )
                 })}
                 <td className="py-3 pl-4 text-right">
-                  <button onClick={() => enableAllForUser(user.id)} className="text-xs" style={{ color: 'var(--accent)' }}>
+                  <button onClick={() => enableAllForUser(user.id)} disabled={enablingAll.has(user.id)}
+                    className="flex items-center gap-1 text-xs ml-auto" style={{ color: 'var(--accent)', opacity: enablingAll.has(user.id) ? 0.5 : 1 }}>
+                    {enablingAll.has(user.id) && <Loader2 size={10} className="animate-spin" />}
                     Enable All
                   </button>
                 </td>

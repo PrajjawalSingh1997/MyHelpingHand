@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const isAuthRoute = pathname === '/login' || pathname === '/signup'
+  const isAuthRoute = pathname === '/login' || pathname === '/signup' || pathname === '/auth/callback'
 
   // Unauthenticated → redirect to login (except on auth routes)
   if (!user && !isAuthRoute) {
@@ -43,6 +43,20 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
+  }
+
+  // Server-side admin guard: only super_admin role can access /admin
+  if (user && pathname.startsWith('/admin')) {
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    if (profile?.role !== 'super_admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Pencil, Trash2, Loader2, ExternalLink } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { ContentPost } from '@/types/database'
 
 const STATUSES = ['idea', 'draft', 'scheduled', 'published'] as const
@@ -15,7 +16,7 @@ const STATUS_COLOR: Record<PostStatus, string> = {
 
 function PostForm({ initial, onSave, onCancel }: {
   initial?: Partial<ContentPost>
-  onSave: (p: Partial<ContentPost>) => void
+  onSave: (p: Partial<ContentPost>) => Promise<void>
   onCancel: () => void
 }) {
   const [f, setF] = useState({
@@ -26,6 +27,16 @@ function PostForm({ initial, onSave, onCancel }: {
     url: initial?.url ?? '',
     scheduled_date: initial?.scheduled_date ?? '',
   })
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+
+  const handleSave = async () => {
+    if (!f.title.trim()) { setError('Title is required.'); return }
+    setSaving(true); setError('')
+    await onSave(f)
+    setSaving(false)
+  }
+
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
       <div className="flex gap-3">
@@ -36,7 +47,7 @@ function PostForm({ initial, onSave, onCancel }: {
         <div className="w-32">
           <label className="label">Platform</label>
           <select value={f.platform ?? ''} onChange={e => setF({ ...f, platform: e.target.value })} className="input mt-1 w-full">
-            {['blog', 'linkedin', 'twitter', 'instagram', 'youtube', 'other'].map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
+            {['blog', 'hashnode', 'dev.to', 'medium', 'personal'].map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
           </select>
         </div>
         <div className="w-32">
@@ -58,8 +69,13 @@ function PostForm({ initial, onSave, onCancel }: {
         <label className="label">URL (once published)</label>
         <input value={f.url ?? ''} onChange={e => setF({ ...f, url: e.target.value })} className="input mt-1 w-full" placeholder="https://..." />
       </div>
+      {error && <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
       <div className="flex gap-2">
-        <button onClick={() => onSave(f)} className="btn-primary text-sm">Save</button>
+        <button onClick={handleSave} disabled={saving}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
+          {saving && <Loader2 size={14} className="animate-spin" />}
+          {saving ? 'Saving…' : 'Save Post'}
+        </button>
         <button onClick={onCancel} className="btn-ghost text-sm">Cancel</button>
       </div>
     </div>
@@ -67,6 +83,7 @@ function PostForm({ initial, onSave, onCancel }: {
 }
 
 export default function BlogPage() {
+  const { show } = useToast()
   const [posts, setPosts]   = useState<ContentPost[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
@@ -83,7 +100,7 @@ export default function BlogPage() {
       const { data } = await supabase
         .from('content_posts').select('*')
         .eq('user_id', user.id)
-        .in('platform', ['blog', 'linkedin', 'twitter', 'instagram', 'youtube', 'other'])
+        .in('platform', ['blog', 'hashnode', 'dev.to', 'medium', 'personal'])
         .order('created_at', { ascending: false }) as { data: ContentPost[] | null }
       setPosts(data ?? [])
       setLoading(false)
@@ -94,23 +111,26 @@ export default function BlogPage() {
   const addPost = async (partial: Partial<ContentPost>) => {
     if (!userId) return
     const supabase = createClient()
-    const { data } = await supabase.from('content_posts').insert({ ...partial, user_id: userId }).select().single() as { data: ContentPost | null }
-    if (data) setPosts(prev => [data, ...prev])
+    const { data, error } = await supabase.from('content_posts').insert({ ...partial, user_id: userId }).select().single() as { data: ContentPost | null; error: any }
+    if (data && !error) { setPosts(prev => [data, ...prev]); show('Post created!', 'success') }
+    else show('Failed to create post.', 'error')
     setAdding(false)
   }
 
   const updatePost = async (id: string, partial: Partial<ContentPost>) => {
     const supabase = createClient()
-    await supabase.from('content_posts').update(partial).eq('id', id)
-    setPosts(prev => prev.map(p => p.id === id ? { ...p, ...partial } : p))
+    const { error } = await supabase.from('content_posts').update(partial).eq('id', id)
+    if (!error) { setPosts(prev => prev.map(p => p.id === id ? { ...p, ...partial } : p)); show('Post updated!', 'success') }
+    else show('Failed to update post.', 'error')
     setEditingId(null)
   }
 
   const deletePost = async (id: string) => {
     if (!confirm('Delete this post?')) return
     const supabase = createClient()
-    await supabase.from('content_posts').delete().eq('id', id)
-    setPosts(prev => prev.filter(p => p.id !== id))
+    const { error } = await supabase.from('content_posts').delete().eq('id', id)
+    if (!error) { setPosts(prev => prev.filter(p => p.id !== id)); show('Post deleted.', 'success') }
+    else show('Failed to delete post.', 'error')
   }
 
   if (loading) return (

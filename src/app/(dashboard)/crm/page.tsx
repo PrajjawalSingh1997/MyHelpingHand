@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { format, parseISO } from 'date-fns'
-import { Plus, Pencil, Trash2, Loader2, Phone, ChevronRight, Mail } from 'lucide-react'
+import { Plus, Pencil, Trash2, Loader2, Phone, Mail } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { CrmLead } from '@/types/database'
 
 const STAGES = ['cold', 'warm', 'hot', 'proposal', 'client', 'lost'] as const
@@ -26,7 +27,7 @@ const STAGE_LABEL: Record<LeadStage, string> = {
 
 function LeadForm({ initial, onSave, onCancel }: {
   initial?: Partial<CrmLead>
-  onSave: (l: Partial<CrmLead>) => void
+  onSave: (l: Partial<CrmLead>) => Promise<void>
   onCancel: () => void
 }) {
   const [f, setF] = useState({
@@ -41,6 +42,16 @@ function LeadForm({ initial, onSave, onCancel }: {
     next_followup: initial?.next_followup ?? '',
     notes: initial?.notes ?? '',
   })
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+
+  const handleSave = async () => {
+    if (!f.name.trim()) { setError('Name is required.'); return }
+    setSaving(true); setError('')
+    await onSave({ ...f, deal_value: f.deal_value ? parseFloat(f.deal_value) : null })
+    setSaving(false)
+  }
+
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
       <div className="flex gap-3">
@@ -93,18 +104,24 @@ function LeadForm({ initial, onSave, onCancel }: {
         <label className="label">Notes</label>
         <textarea value={f.notes ?? ''} onChange={e => setF({ ...f, notes: e.target.value })} rows={3} className="input mt-1 w-full resize-none" />
       </div>
+      {error && <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
       <div className="flex gap-2">
-        <button onClick={() => onSave({ ...f, deal_value: f.deal_value ? parseFloat(f.deal_value) : null })} className="btn-primary text-sm">Save</button>
+        <button onClick={handleSave} disabled={saving}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
+          {saving && <Loader2 size={14} className="animate-spin" />}
+          {saving ? 'Saving…' : 'Save Lead'}
+        </button>
         <button onClick={onCancel} className="btn-ghost text-sm">Cancel</button>
       </div>
     </div>
   )
 }
 
-function ColdCallLog({ userId }: { userId: string }) {
-  const [calls, setCalls] = useState<{ id: string; date: string; name: string; phone: string; outcome: string; notes: string }[]>([])
+function ColdCallLog({ userId, leads }: { userId: string; leads: CrmLead[] }) {
+  const [calls, setCalls] = useState<{ id: string; date: string; name: string; phone: string; outcome: string; notes: string; lead_id: string | null }[]>([])
   const [adding, setAdding] = useState(false)
-  const [form, setForm] = useState({ date: format(new Date(), 'yyyy-MM-dd'), name: '', phone: '', outcome: 'no_answer', notes: '' })
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [form, setForm] = useState({ date: format(new Date(), 'yyyy-MM-dd'), name: '', phone: '', outcome: 'no_answer', notes: '', lead_id: '' })
 
   useEffect(() => {
     async function load() {
@@ -117,10 +134,43 @@ function ColdCallLog({ userId }: { userId: string }) {
 
   const save = async () => {
     const supabase = createClient()
-    const { data } = await supabase.from('cold_calls').insert({ ...form, user_id: userId }).select().single() as { data: any }
-    if (data) setCalls(prev => [data, ...prev])
+    if (editingId) {
+      const payload = { ...form, lead_id: form.lead_id || null }
+      const { data } = await supabase.from('cold_calls').update(payload).eq('id', editingId).select().single() as { data: any }
+      if (data) setCalls(prev => prev.map(c => c.id === editingId ? data : c))
+      setEditingId(null)
+    } else {
+      const payload = { ...form, user_id: userId, lead_id: form.lead_id || null }
+      const { data } = await supabase.from('cold_calls').insert(payload).select().single() as { data: any }
+      if (data) setCalls(prev => [data, ...prev])
+      setAdding(false)
+    }
+    setForm({ date: format(new Date(), 'yyyy-MM-dd'), name: '', phone: '', outcome: 'no_answer', notes: '', lead_id: '' })
+  }
+
+  const deleteCall = async (id: string) => {
+    if (!confirm('Delete this call log?')) return
+    const supabase = createClient()
+    const { error } = await supabase.from('cold_calls').delete().eq('id', id)
+    if (!error) setCalls(prev => prev.filter(c => c.id !== id))
+  }
+
+  const openEdit = (call: any) => {
+    setForm({ date: call.date, name: call.name, phone: call.phone, outcome: call.outcome, notes: call.notes || '', lead_id: call.lead_id || '' })
+    setEditingId(call.id)
     setAdding(false)
-    setForm({ date: format(new Date(), 'yyyy-MM-dd'), name: '', phone: '', outcome: 'no_answer', notes: '' })
+  }
+
+  const cancel = () => {
+    setAdding(false)
+    setEditingId(null)
+    setForm({ date: format(new Date(), 'yyyy-MM-dd'), name: '', phone: '', outcome: 'no_answer', notes: '', lead_id: '' })
+  }
+
+  const updateOutcome = async (id: string, newOutcome: string) => {
+    const supabase = createClient()
+    const { error } = await supabase.from('cold_calls').update({ outcome: newOutcome }).eq('id', id)
+    if (!error) setCalls(prev => prev.map(c => c.id === id ? { ...c, outcome: newOutcome } : c))
   }
 
   const OUTCOME_LABEL: Record<string, string> = { no_answer: '📵 No Answer', interested: '✅ Interested', not_interested: '❌ Not Interested', callback: '🔔 Callback', converted: '🎯 Converted' }
@@ -130,14 +180,27 @@ function ColdCallLog({ userId }: { userId: string }) {
     <div className="card">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Cold Call Log</h3>
-        <button onClick={() => setAdding(true)} className="btn-ghost flex items-center gap-1 text-xs"><Plus size={13} /> Log Call</button>
+        <button onClick={() => { setAdding(true); setEditingId(null); setForm({ date: format(new Date(), 'yyyy-MM-dd'), name: '', phone: '', outcome: 'no_answer', notes: '', lead_id: '' }) }} className="btn-ghost flex items-center gap-1 text-xs"><Plus size={13} /> Log Call</button>
       </div>
-      {adding && (
+      {(adding || editingId) && (
         <div className="mb-4 space-y-3 rounded-xl p-4" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+          <h4 className="text-xs font-bold mb-2" style={{ color: 'var(--text)' }}>{editingId ? 'Edit Call Log' : 'New Call Log'}</h4>
           <div className="flex gap-3">
             <div><label className="label">Date</label><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="input mt-1" /></div>
             <div className="flex-1"><label className="label">Name</label><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="input mt-1 w-full" /></div>
             <div className="flex-1"><label className="label">Phone</label><input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="input mt-1 w-full" /></div>
+            <div className="flex-1">
+              <label className="label">Linked Lead</label>
+              <select value={form.lead_id} onChange={e => {
+                const lId = e.target.value
+                const lead = leads.find(l => l.id === lId)
+                if (lead) setForm({ ...form, lead_id: lId, name: lead.name, phone: lead.phone ?? '' })
+                else setForm({ ...form, lead_id: '' })
+              }} className="input mt-1 w-full">
+                <option value="">None</option>
+                {leads.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+              </select>
+            </div>
             <div className="flex-1">
               <label className="label">Outcome</label>
               <select value={form.outcome} onChange={e => setForm({ ...form, outcome: e.target.value })} className="input mt-1 w-full">
@@ -146,22 +209,37 @@ function ColdCallLog({ userId }: { userId: string }) {
             </div>
           </div>
           <div><label className="label">Notes</label><input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className="input mt-1 w-full" /></div>
-          <div className="flex gap-2"><button onClick={save} className="btn-primary text-sm">Save</button><button onClick={() => setAdding(false)} className="btn-ghost text-sm">Cancel</button></div>
+          <div className="flex gap-2"><button onClick={save} className="btn-primary text-sm">Save</button><button onClick={cancel} className="btn-ghost text-sm">Cancel</button></div>
         </div>
       )}
       <div className="space-y-2">
         {calls.slice(0, 10).map(c => (
-          <div key={c.id} className="flex items-center justify-between border-b py-2" style={{ borderColor: 'rgba(45,45,63,0.5)' }}>
+          <div key={c.id} className="group flex items-center justify-between border-b py-2" style={{ borderColor: 'rgba(45,45,63,0.5)' }}>
             <div className="flex items-center gap-3">
               <Phone size={14} style={{ color: 'var(--text-muted)' }} />
               <div>
-                <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{c.name}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>
+                  {c.name}
+                  {c.lead_id && leads.find(l => l.id === c.lead_id) && (
+                    <span className="ml-2 text-[10px] font-normal px-1.5 py-0.5 rounded" style={{ background: 'var(--surface-hover)', color: 'var(--accent)' }}>
+                      Lead: {leads.find(l => l.id === c.lead_id)?.name}
+                    </span>
+                  )}
+                </p>
                 <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{c.phone} · {format(parseISO(c.date), 'MMM d')}</p>
               </div>
             </div>
-            <div className="text-right">
-              <span className="text-xs" style={{ color: OUTCOME_COLOR[c.outcome] ?? 'var(--text-muted)' }}>{OUTCOME_LABEL[c.outcome] ?? c.outcome}</span>
-              {c.notes && <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{c.notes}</p>}
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <select value={c.outcome} onChange={e => updateOutcome(c.id, e.target.value)} className="input text-[10px] px-1 py-0.5 h-auto leading-tight" style={{ color: OUTCOME_COLOR[c.outcome] ?? 'var(--text-muted)' }}>
+                  {Object.keys(OUTCOME_LABEL).map(k => <option key={k} value={k} style={{ color: 'var(--text)' }}>{OUTCOME_LABEL[k]}</option>)}
+                </select>
+                {c.notes && <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{c.notes}</p>}
+              </div>
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => openEdit(c)} className="rounded p-1" style={{ color: 'var(--text-muted)' }}><Pencil size={13} /></button>
+                <button onClick={() => deleteCall(c.id)} className="rounded p-1" style={{ color: 'var(--danger)' }}><Trash2 size={13} /></button>
+              </div>
             </div>
           </div>
         ))}
@@ -172,6 +250,7 @@ function ColdCallLog({ userId }: { userId: string }) {
 }
 
 export default function CrmPage() {
+  const { show } = useToast()
   const [leads, setLeads]   = useState<CrmLead[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
@@ -195,23 +274,30 @@ export default function CrmPage() {
   const addLead = async (partial: Partial<CrmLead>) => {
     if (!userId) return
     const supabase = createClient()
-    const { data } = await supabase.from('crm_leads').insert({ ...partial, user_id: userId }).select().single() as { data: CrmLead | null }
-    if (data) setLeads(prev => [data, ...prev])
+    const { data, error } = await supabase.from('crm_leads').insert({ ...partial, user_id: userId }).select().single() as { data: CrmLead | null; error: any }
+    if (data && !error) { setLeads(prev => [data, ...prev]); show('Lead added!', 'success') }
+    else show('Failed to add lead.', 'error')
     setAdding(false)
   }
 
   const updateLead = async (id: string, partial: Partial<CrmLead>) => {
     const supabase = createClient()
-    await supabase.from('crm_leads').update(partial).eq('id', id)
-    setLeads(prev => prev.map(l => l.id === id ? { ...l, ...partial } : l))
+    const { error } = await supabase.from('crm_leads').update(partial).eq('id', id)
+    if (!error) {
+      setLeads(prev => prev.map(l => l.id === id ? { ...l, ...partial } : l))
+      if (editingId === id) show('Lead updated!', 'success')
+    } else {
+      if (editingId === id) show('Failed to update lead.', 'error')
+    }
     setEditingId(null)
   }
 
   const deleteLead = async (id: string) => {
     if (!confirm('Delete this lead?')) return
     const supabase = createClient()
-    await supabase.from('crm_leads').delete().eq('id', id)
-    setLeads(prev => prev.filter(l => l.id !== id))
+    const { error } = await supabase.from('crm_leads').delete().eq('id', id)
+    if (!error) { setLeads(prev => prev.filter(l => l.id !== id)); show('Lead deleted.', 'success') }
+    else show('Failed to delete lead.', 'error')
   }
 
   if (loading) return (
@@ -316,7 +402,7 @@ export default function CrmPage() {
         })}
       </div>
 
-      {userId && <ColdCallLog userId={userId} />}
+      {userId && <ColdCallLog userId={userId} leads={leads} />}
     </div>
   )
 }

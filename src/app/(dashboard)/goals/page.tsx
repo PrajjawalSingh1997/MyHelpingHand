@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Pencil, Trash2, Loader2, CheckCircle2, Circle, Target } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { Goal } from '@/types/database'
 
 const GOAL_TYPES = ['life', 'annual', 'quarterly', 'monthly'] as const
@@ -31,7 +32,7 @@ const STATUS_COLOR: Record<GoalStatus, string> = {
 
 function GoalForm({ initial, onSave, onCancel }: {
   initial?: Partial<Goal>
-  onSave: (g: Partial<Goal>) => void
+  onSave: (g: Partial<Goal>) => Promise<void>
   onCancel: () => void
 }) {
   const [f, setF] = useState({
@@ -44,6 +45,17 @@ function GoalForm({ initial, onSave, onCancel }: {
     unit: initial?.unit ?? '',
     deadline: initial?.deadline ?? '',
   })
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+
+  const handleSave = async () => {
+    if (!f.title.trim()) { setError('Goal title is required.'); return }
+    setSaving(true)
+    setError('')
+    await onSave(f)
+    setSaving(false)
+  }
+
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
       <div>
@@ -88,8 +100,13 @@ function GoalForm({ initial, onSave, onCancel }: {
           <input type="date" value={f.deadline ?? ''} onChange={e => setF({ ...f, deadline: e.target.value })} className="input mt-1 w-full" />
         </div>
       </div>
+      {error && <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
       <div className="flex gap-2 pt-1">
-        <button onClick={() => onSave(f)} className="btn-primary text-sm">Save Goal</button>
+        <button onClick={handleSave} disabled={saving}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
+          {saving && <Loader2 size={14} className="animate-spin" />}
+          {saving ? 'Saving…' : 'Save Goal'}
+        </button>
         <button onClick={onCancel} className="btn-ghost text-sm">Cancel</button>
       </div>
     </div>
@@ -155,6 +172,7 @@ function GoalCard({ goal, onEdit, onDelete, onToggle }: {
 }
 
 export default function GoalsPage() {
+  const { show } = useToast()
   const [goals, setGoals]   = useState<Goal[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
@@ -178,15 +196,25 @@ export default function GoalsPage() {
   const addGoal = async (partial: Partial<Goal>) => {
     if (!userId) return
     const supabase = createClient()
-    const { data } = await supabase.from('goals').insert({ ...partial, user_id: userId }).select().single() as { data: Goal | null }
-    if (data) setGoals(prev => [...prev, data])
+    const { data, error } = await supabase.from('goals').insert({ ...partial, user_id: userId }).select().single() as { data: Goal | null; error: any }
+    if (data && !error) {
+      setGoals(prev => [...prev, data])
+      show('Goal created!', 'success')
+    } else {
+      show('Failed to create goal.', 'error')
+    }
     setAdding(false)
   }
 
   const updateGoal = async (id: string, partial: Partial<Goal>) => {
     const supabase = createClient()
-    await supabase.from('goals').update(partial).eq('id', id)
-    setGoals(prev => prev.map(g => g.id === id ? { ...g, ...partial } : g))
+    const { error } = await supabase.from('goals').update(partial).eq('id', id)
+    if (!error) {
+      setGoals(prev => prev.map(g => g.id === id ? { ...g, ...partial } : g))
+      if (editingId === id) show('Goal updated!', 'success')
+    } else {
+      show('Failed to update goal.', 'error')
+    }
     setEditingId(null)
   }
 
@@ -200,7 +228,13 @@ export default function GoalsPage() {
   const toggleGoal = async (id: string) => {
     const goal = goals.find(g => g.id === id)
     if (!goal) return
-    const newStatus = goal.status === 'completed' ? 'in_progress' : 'completed'
+    let newStatus: GoalStatus
+    if (goal.status === 'completed') {
+      // Restore: if it has a numeric target it was being tracked → in_progress, otherwise not_started
+      newStatus = (goal.target_value !== null && goal.target_value !== '') ? 'in_progress' : 'not_started'
+    } else {
+      newStatus = 'completed'
+    }
     await updateGoal(id, { status: newStatus })
   }
 

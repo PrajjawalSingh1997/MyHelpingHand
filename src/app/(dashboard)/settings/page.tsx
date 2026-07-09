@@ -8,6 +8,10 @@ interface ProfileData {
   display_name: string | null
   bio: string | null
   role: string | null
+  linkedin_url: string | null
+  github_url: string | null
+  twitter_url: string | null
+  portfolio_url: string | null
 }
 interface SettingsData {
   theme: string
@@ -15,21 +19,24 @@ interface SettingsData {
   daily_reminder_time: string | null
   timezone: string
   week_start: string
+  debt_total: number
 }
 
 export default function SettingsPage() {
   const router = useRouter()
-  const [loading, setLoading]   = useState(true)
-  const [saving, setSaving]     = useState(false)
-  const [userId, setUserId]     = useState<string | null>(null)
+  const [loading, setLoading]       = useState(true)
+  const [savingProfile, setSavingProfile] = useState(false)
+  const [savingSettings, setSavingSettings] = useState(false)
+  const [userId, setUserId]       = useState<string | null>(null)
   const [email, setEmail]       = useState('')
-  const [profile, setProfile]   = useState<ProfileData>({ display_name: '', bio: '', role: '' })
+  const [profile, setProfile]   = useState<ProfileData>({ display_name: '', bio: '', role: '', linkedin_url: '', github_url: '', twitter_url: '', portfolio_url: '' })
   const [settings, setSettings] = useState<SettingsData>({
     theme: 'dark',
     notifications_enabled: false,
     daily_reminder_time: '06:00',
     timezone: 'Asia/Kolkata',
     week_start: 'monday',
+    debt_total: 80000,
   })
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [newPassword, setNewPassword] = useState('')
@@ -44,8 +51,8 @@ export default function SettingsPage() {
       setEmail(user.email ?? '')
 
       const [pRes, sRes] = await Promise.all([
-        supabase.from('user_profiles').select('display_name, bio, role').eq('id', user.id).single(),
-        supabase.from('user_settings').select('theme, notifications_enabled, daily_reminder_time, timezone, week_start').eq('user_id', user.id).single(),
+        supabase.from('user_profiles').select('display_name, bio, role, linkedin_url, github_url, twitter_url, portfolio_url').eq('id', user.id).single(),
+        supabase.from('user_settings').select('theme, notifications_enabled, daily_reminder_time, timezone, week_start, debt_total').eq('user_id', user.id).single(),
       ])
       const p = pRes.data as ProfileData | null
       const s = sRes.data as SettingsData | null
@@ -59,21 +66,28 @@ export default function SettingsPage() {
 
   const saveProfile = async () => {
     if (!userId) return
-    setSaving(true)
+    setSavingProfile(true)
     const supabase = createClient()
-    await supabase.from('user_profiles').update({ display_name: profile.display_name, bio: profile.bio }).eq('id', userId)
-    setMsg({ type: 'success', text: 'Profile saved!' })
-    setSaving(false)
+    const { error } = await supabase.from('user_profiles').update({ 
+      display_name: profile.display_name, 
+      bio: profile.bio,
+      linkedin_url: profile.linkedin_url,
+      github_url: profile.github_url,
+      twitter_url: profile.twitter_url,
+      portfolio_url: profile.portfolio_url
+    }).eq('id', userId)
+    setMsg(error ? { type: 'error', text: 'Failed to save profile.' } : { type: 'success', text: 'Profile saved!' })
+    setSavingProfile(false)
     setTimeout(() => setMsg(null), 3000)
   }
 
   const saveSettings = async () => {
     if (!userId) return
-    setSaving(true)
+    setSavingSettings(true)
     const supabase = createClient()
-    await supabase.from('user_settings').update(settings).eq('user_id', userId)
-    setMsg({ type: 'success', text: 'Settings saved!' })
-    setSaving(false)
+    const { error } = await supabase.from('user_settings').update(settings).eq('user_id', userId)
+    setMsg(error ? { type: 'error', text: 'Failed to save settings.' } : { type: 'success', text: 'Settings saved!' })
+    setSavingSettings(false)
     setTimeout(() => setMsg(null), 3000)
   }
 
@@ -133,15 +147,50 @@ export default function SettingsPage() {
           <label className="label">Bio</label>
           <textarea value={profile.bio ?? ''} onChange={e => setProfile({ ...profile, bio: e.target.value })} rows={2} className="input mt-1 w-full resize-none" placeholder="Tell us about yourself..." />
         </div>
-        <button onClick={saveProfile} disabled={saving}
-          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
-          <Save size={14} /> Save Profile
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label">LinkedIn URL</label>
+            <input value={profile.linkedin_url ?? ''} onChange={e => setProfile({ ...profile, linkedin_url: e.target.value })} className="input mt-1 w-full" placeholder="https://linkedin.com/in/..." />
+          </div>
+          <div>
+            <label className="label">GitHub URL</label>
+            <input value={profile.github_url ?? ''} onChange={e => setProfile({ ...profile, github_url: e.target.value })} className="input mt-1 w-full" placeholder="https://github.com/..." />
+          </div>
+          <div>
+            <label className="label">Twitter / X URL</label>
+            <input value={profile.twitter_url ?? ''} onChange={e => setProfile({ ...profile, twitter_url: e.target.value })} className="input mt-1 w-full" placeholder="https://x.com/..." />
+          </div>
+          <div>
+            <label className="label">Portfolio URL</label>
+            <input value={profile.portfolio_url ?? ''} onChange={e => setProfile({ ...profile, portfolio_url: e.target.value })} className="input mt-1 w-full" placeholder="https://..." />
+          </div>
+        </div>
+        <button onClick={saveProfile} disabled={savingProfile}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: savingProfile ? 0.6 : 1 }}>
+          {savingProfile ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+          {savingProfile ? 'Saving…' : 'Save Profile'}
         </button>
       </div>
 
       {/* Preferences */}
       <div className="card space-y-4">
         <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Preferences</h2>
+        <div>
+          <label className="label mb-2 block">Theme</label>
+          <div className="flex gap-4">
+            {['dark', 'light', 'system'].map(t => (
+              <label key={t} className="flex cursor-pointer items-center gap-2 text-sm" style={{ color: 'var(--text)' }}>
+                <input type="radio" name="theme" value={t} checked={settings.theme === t}
+                  onChange={(e) => {
+                    setSettings({ ...settings, theme: e.target.value })
+                    document.documentElement.setAttribute('data-theme', e.target.value === 'system' ? '' : e.target.value)
+                  }}
+                  className="text-[#6C5CE7] focus:ring-[#6C5CE7] border-[#2D2D3F] bg-[#0A0A0F]" />
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </label>
+            ))}
+          </div>
+        </div>
         <div className="flex gap-4">
           <div className="flex-1">
             <label className="label">Timezone</label>
@@ -161,11 +210,34 @@ export default function SettingsPage() {
           <div className="flex-1">
             <label className="label">Daily Reminder</label>
             <input type="time" value={settings.daily_reminder_time ?? '06:00'} onChange={e => setSettings({ ...settings, daily_reminder_time: e.target.value })} className="input mt-1 w-full" />
+            <p className="mt-1 text-[10px]" style={{ color: 'var(--text-muted)' }}>
+              Saved to your profile, but in-app push notifications are not yet active.
+            </p>
           </div>
         </div>
-        <button onClick={saveSettings} disabled={saving}
-          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
-          <Save size={14} /> Save Preferences
+        <button onClick={saveSettings} disabled={savingSettings}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: savingSettings ? 0.6 : 1 }}>
+          {savingSettings ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+          {savingSettings ? 'Saving…' : 'Save Preferences'}
+        </button>
+      </div>
+
+      {/* Finance Configuration */}
+      <div className="card space-y-4">
+        <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Finance Configuration</h2>
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label className="label">Total Debt (₹)</label>
+            <input type="number" value={settings.debt_total} onChange={e => setSettings({ ...settings, debt_total: parseFloat(e.target.value) || 0 })} className="input mt-1 w-full" placeholder="80000" />
+            <p className="mt-1 text-[10px]" style={{ color: 'var(--text-muted)' }}>
+              This defines the 100% mark for your debt payoff progress bar.
+            </p>
+          </div>
+        </div>
+        <button onClick={saveSettings} disabled={savingSettings}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: savingSettings ? 0.6 : 1 }}>
+          {savingSettings ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+          {savingSettings ? 'Saving…' : 'Save Finance Settings'}
         </button>
       </div>
 

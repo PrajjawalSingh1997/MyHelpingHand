@@ -2,30 +2,27 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { format, parseISO, subDays } from 'date-fns'
-import { Plus, Loader2, Heart, Droplets, Moon, Dumbbell } from 'lucide-react'
+import { Plus, Loader2, Heart, Droplets, Moon, Dumbbell, Pencil, Trash2 } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { HealthLog } from '@/types/database'
 
 function getBool(v: unknown): boolean { return v === true || v === 'true' }
 
+const BLANK_FORM = (date: string) => ({
+  date,
+  weight_kg: '', water_glasses: '', sleep_hours: '',
+  exercise_done: false, yoga_done: false, meditation_done: false, skincare_done: false,
+  exercise_minutes: '', exercise_notes: '', mood: '3', notes: '',
+})
+
 export default function HealthPage() {
+  const { show } = useToast()
   const [logs, setLogs]     = useState<HealthLog[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [today] = useState(format(new Date(), 'yyyy-MM-dd'))
-  const [form, setForm] = useState({
-    date: format(new Date(), 'yyyy-MM-dd'),
-    weight_kg: '',
-    water_glasses: '',
-    sleep_hours: '',
-    exercise_done: false,
-    yoga_done: false,
-    meditation_done: false,
-    skincare_done: false,
-    exercise_notes: '',
-    mood: '3',
-    notes: '',
-  })
+  const [form, setForm] = useState(BLANK_FORM(format(new Date(), 'yyyy-MM-dd')))
 
   useEffect(() => {
     async function load() {
@@ -34,7 +31,7 @@ export default function HealthPage() {
       if (!user) { setLoading(false); return }
       setUserId(user.id)
 
-      const since = format(subDays(new Date(), 30), 'yyyy-MM-dd')
+      const since = format(subDays(new Date(), 90), 'yyyy-MM-dd')
       const { data } = await supabase.from('health_logs').select('*')
         .eq('user_id', user.id).gte('date', since).order('date', { ascending: false }) as { data: HealthLog[] | null }
       const d = data ?? []
@@ -52,6 +49,7 @@ export default function HealthPage() {
           yoga_done: getBool(todayLog.yoga_done),
           meditation_done: getBool(todayLog.meditation_done),
           skincare_done: getBool(todayLog.skincare_done),
+          exercise_minutes: String(todayLog.exercise_minutes ?? ''),
           exercise_notes: todayLog.exercise_notes ?? '',
           mood: String(todayLog.mood ?? '3'),
           notes: todayLog.notes ?? '',
@@ -76,6 +74,7 @@ export default function HealthPage() {
       yoga_done: form.yoga_done,
       meditation_done: form.meditation_done,
       skincare_done: form.skincare_done,
+      exercise_minutes: form.exercise_minutes ? parseInt(form.exercise_minutes) : null,
       exercise_notes: form.exercise_notes || null,
       mood: parseInt(form.mood),
       notes: form.notes || null,
@@ -86,8 +85,24 @@ export default function HealthPage() {
         const without = prev.filter(l => l.date !== form.date)
         return [data, ...without].sort((a, b) => b.date.localeCompare(a.date))
       })
+      show('Health log saved!', 'success')
+    } else {
+      show('Failed to save log.', 'error')
     }
     setSaving(false)
+  }
+
+  const deleteLog = async (date: string) => {
+    if (!userId || !confirm('Delete this health log?')) return
+    const supabase = createClient()
+    const { error } = await supabase.from('health_logs').delete().eq('user_id', userId).eq('date', date)
+    if (!error) {
+      setLogs(prev => prev.filter(l => l.date !== date))
+      show('Log deleted.', 'success')
+      if (form.date === date) setForm(BLANK_FORM(today))
+    } else {
+      show('Failed to delete log.', 'error')
+    }
   }
 
   if (loading) return (
@@ -101,6 +116,7 @@ export default function HealthPage() {
   const avgWater   = recentLogs.filter(l => l.water_glasses).reduce((s, l) => s + (l.water_glasses ?? 0), 0) / (recentLogs.filter(l => l.water_glasses).length || 1)
   const exerciseDays = recentLogs.filter(l => l.exercise_done).length
   const meditationDays = recentLogs.filter(l => l.meditation_done).length
+  const totalExerciseMins = recentLogs.reduce((s, l) => s + (l.exercise_minutes ?? 0), 0)
 
   const MOOD_EMOJI = ['', '😞', '😕', '😐', '🙂', '😄']
 
@@ -116,7 +132,7 @@ export default function HealthPage() {
         {[
           { icon: <Moon size={18} style={{ color: '#818cf8' }} />, label: 'Avg Sleep', value: `${avgSleep.toFixed(1)}h`, sub: 'last 14 days' },
           { icon: <Droplets size={18} style={{ color: '#38bdf8' }} />, label: 'Avg Water', value: `${avgWater.toFixed(1)} gl`, sub: 'last 14 days' },
-          { icon: <Dumbbell size={18} style={{ color: 'var(--success)' }} />, label: 'Exercise', value: `${exerciseDays}d`, sub: 'last 14 days' },
+          { icon: <Dumbbell size={18} style={{ color: 'var(--success)' }} />, label: 'Exercise', value: `${exerciseDays}d (${totalExerciseMins}m)`, sub: 'last 14 days' },
           { icon: <Heart size={18} style={{ color: '#f43f5e' }} />, label: 'Meditation', value: `${meditationDays}d`, sub: 'last 14 days' },
         ].map(s => (
           <div key={s.label} className="card">
@@ -132,11 +148,11 @@ export default function HealthPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Daily Log</h2>
           <input type="date" value={form.date} onChange={e => {
-            setForm({ ...form, date: e.target.value })
-            const existing = logs.find(l => l.date === e.target.value)
+            const newDate = e.target.value
+            const existing = logs.find(l => l.date === newDate)
             if (existing) {
-              setForm(f => ({ ...f,
-                date: e.target.value,
+              setForm({
+                date: newDate,
                 weight_kg: String(existing.weight_kg ?? ''),
                 water_glasses: String(existing.water_glasses ?? ''),
                 sleep_hours: String(existing.sleep_hours ?? ''),
@@ -144,10 +160,13 @@ export default function HealthPage() {
                 yoga_done: getBool(existing.yoga_done),
                 meditation_done: getBool(existing.meditation_done),
                 skincare_done: getBool(existing.skincare_done),
+                exercise_minutes: String(existing.exercise_minutes ?? ''),
                 exercise_notes: existing.exercise_notes ?? '',
                 mood: String(existing.mood ?? '3'),
                 notes: existing.notes ?? '',
-              }))
+              })
+            } else {
+              setForm(BLANK_FORM(newDate))
             }
           }} className="input text-xs" />
         </div>
@@ -197,6 +216,10 @@ export default function HealthPage() {
         </div>
 
         <div className="flex gap-4">
+          <div className="w-24">
+            <label className="label">Ex. Mins</label>
+            <input type="number" value={form.exercise_minutes} onChange={e => setForm({ ...form, exercise_minutes: e.target.value })} className="input mt-1 w-full" placeholder="45" />
+          </div>
           <div className="flex-1">
             <label className="label">Exercise Notes</label>
             <input value={form.exercise_notes} onChange={e => setForm({ ...form, exercise_notes: e.target.value })} className="input mt-1 w-full" placeholder="5km run, 20 push-ups..." />
@@ -213,21 +236,21 @@ export default function HealthPage() {
         </button>
       </div>
 
-      {/* Last 14 days table */}
+      {/* History table */}
       <div className="card">
-        <h3 className="mb-3 text-sm font-semibold" style={{ color: 'var(--text)' }}>Last 14 Days</h3>
+        <h3 className="mb-3 text-sm font-semibold" style={{ color: 'var(--text)' }}>Last 90 Days ({logs.length} logs)</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
-                {['Date', 'Weight', 'Water', 'Sleep', '🏋️', '🧘', '🧠', '✨', 'Mood', 'Notes'].map(h => (
+                {['Date', 'Weight', 'Water', 'Sleep', '🏋️', '🧘', '🧠', '✨', 'Mood', 'Notes', ''].map(h => (
                   <th key={h} className="py-2 pr-4 text-left font-medium" style={{ color: 'var(--text-muted)' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {recentLogs.map(log => (
-                <tr key={log.id} className="border-b" style={{ borderColor: 'rgba(45,45,63,0.5)' }}>
+                <tr key={log.id} className="border-b group" style={{ borderColor: 'rgba(45,45,63,0.5)' }}>
                   <td className="py-2 pr-4 font-medium" style={{ color: log.date === today ? 'var(--accent)' : 'var(--text)' }}>
                     {format(parseISO(log.date), 'EEE, MMM d')}
                   </td>
@@ -240,7 +263,31 @@ export default function HealthPage() {
                     </td>
                   ))}
                   <td className="py-2 pr-4">{MOOD_EMOJI[log.mood ?? 3]}</td>
-                  <td className="py-2 max-w-[200px] truncate" style={{ color: 'var(--text-muted)' }}>{log.notes ?? '—'}</td>
+                  <td className="py-2 max-w-[150px] truncate pr-4" style={{ color: 'var(--text-muted)' }}>
+                    {log.exercise_minutes ? `${log.exercise_minutes}m ex: ` : ''}{log.notes ?? '—'}
+                  </td>
+                  <td className="py-2 text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => {
+                        setForm({
+                          date: log.date,
+                          weight_kg: String(log.weight_kg ?? ''),
+                          water_glasses: String(log.water_glasses ?? ''),
+                          sleep_hours: String(log.sleep_hours ?? ''),
+                          exercise_done: getBool(log.exercise_done),
+                          yoga_done: getBool(log.yoga_done),
+                          meditation_done: getBool(log.meditation_done),
+                          skincare_done: getBool(log.skincare_done),
+                          exercise_minutes: String(log.exercise_minutes ?? ''),
+                          exercise_notes: log.exercise_notes ?? '',
+                          mood: String(log.mood ?? 3),
+                          notes: log.notes ?? '',
+                        });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }} className="rounded p-1 text-[#64748B] hover:text-[#E2E8F0]"><Pencil size={13} /></button>
+                      <button onClick={() => deleteLog(log.date)} className="rounded p-1 text-[#FF6B6B] hover:bg-[#FF6B6B] hover:text-white"><Trash2 size={13} /></button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

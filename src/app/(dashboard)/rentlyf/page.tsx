@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { format, parseISO } from 'date-fns'
 import { Plus, Loader2, Clock } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { RentlyfLog } from '@/types/database'
 
 export default function RentlyfPage() {
+  const { show } = useToast()
   const [logs, setLogs]     = useState<RentlyfLog[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
@@ -41,6 +43,9 @@ export default function RentlyfPage() {
         const without = prev.filter(l => l.date !== date)
         return [data, ...without].sort((a, b) => b.date.localeCompare(a.date))
       })
+      show('Hours logged!', 'success')
+    } else {
+      show('Failed to log hours.', 'error')
     }
     setHours('')
     setNotes('')

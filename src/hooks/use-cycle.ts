@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { differenceInCalendarDays, parseISO } from 'date-fns'
 import { createClient } from '@/lib/supabase/client'
 import type { NinetyDayCycle } from '@/types/database'
 
@@ -25,9 +26,7 @@ export function useActiveCycle() {
 
       if (data) {
         setCycle(data)
-        const today = new Date()
-        const start = new Date(data.start_date)
-        const dayNum = Math.floor((today.getTime() - start.getTime()) / 86400000) + 1
+        const dayNum = differenceInCalendarDays(new Date(), parseISO(data.start_date)) + 1
         setCurrentDay(Math.min(Math.max(dayNum, 1), 90))
       }
       setLoading(false)

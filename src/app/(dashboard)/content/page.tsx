@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { format, addDays, startOfWeek, parseISO } from 'date-fns'
 import { Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight, Copy, Check } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { ContentPost } from '@/types/database'
 
 const PLATFORMS = ['linkedin', 'twitter', 'instagram', 'youtube', 'newsletter'] as const
@@ -19,9 +20,20 @@ const STATUS_COLOR: Record<ContentStatus, string> = {
   published: 'var(--success)',
 }
 
+const PILLARS = [
+  { slug: 'backend', name: 'Backend Engineering', color: '#6C5CE7' },
+  { slug: 'startup', name: 'Startup Life', color: '#FDCB6E' },
+  { slug: 'rentlyf', name: 'Building Rentlyf', color: '#00C9A7' },
+  { slug: 'learning', name: 'Learning', color: '#FF9F43' },
+  { slug: 'product', name: 'Product Thinking', color: '#E84393' },
+  { slug: 'career', name: 'Career Journey', color: '#0984E3' },
+  { slug: 'docs', name: 'Tech Documentation', color: '#A55EEA' },
+  { slug: 'business', name: 'Business', color: '#20BF6B' },
+]
+
 function PostModal({ initial, onSave, onClose }: {
   initial?: Partial<ContentPost>
-  onSave: (p: Partial<ContentPost>) => void
+  onSave: (p: Partial<ContentPost>) => Promise<void>
   onClose: () => void
 }) {
   const [f, setF] = useState({
@@ -33,7 +45,18 @@ function PostModal({ initial, onSave, onClose }: {
     url: initial?.url ?? '',
     hook: initial?.hook ?? '',
     tags: initial?.tags ?? '',
+    pillar: initial?.pillar ?? '',
   })
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+
+  const handleSave = async () => {
+    if (!f.title.trim()) { setError('Title is required.'); return }
+    setSaving(true); setError('')
+    await onSave(f)
+    setSaving(false)
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)' }}>
       <div className="w-full max-w-xl rounded-2xl p-6 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
@@ -53,6 +76,13 @@ function PostModal({ initial, onSave, onClose }: {
             <label className="label">Status</label>
             <select value={f.status} onChange={e => setF({ ...f, status: e.target.value as ContentStatus })} className="input mt-1 w-full">
               {STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+            </select>
+          </div>
+          <div className="w-32">
+            <label className="label">Pillar</label>
+            <select value={f.pillar ?? ''} onChange={e => setF({ ...f, pillar: e.target.value })} className="input mt-1 w-full">
+              <option value="">None</option>
+              {PILLARS.map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
             </select>
           </div>
         </div>
@@ -78,8 +108,13 @@ function PostModal({ initial, onSave, onClose }: {
             <input value={f.url ?? ''} onChange={e => setF({ ...f, url: e.target.value })} className="input mt-1 w-full" />
           </div>
         </div>
+        {error && <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
         <div className="flex gap-2 pt-2">
-          <button onClick={() => onSave(f)} className="btn-primary text-sm">Save</button>
+          <button onClick={handleSave} disabled={saving}
+            className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
+            {saving && <Loader2 size={14} className="animate-spin" />}
+            {saving ? 'Saving…' : 'Save'}
+          </button>
           <button onClick={onClose} className="btn-ghost text-sm">Cancel</button>
         </div>
       </div>
@@ -101,6 +136,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export default function ContentPage() {
+  const { show } = useToast()
   const [posts, setPosts]   = useState<ContentPost[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
@@ -118,7 +154,7 @@ export default function ContentPage() {
       const { data } = await supabase
         .from('content_posts').select('*')
         .eq('user_id', user.id)
-        .not('platform', 'eq', 'blog')
+        .not('platform', 'in', '("blog","hashnode","dev.to","medium","personal")')
         .order('scheduled_date', { ascending: false }) as { data: ContentPost[] | null }
       setPosts(data ?? [])
       setLoading(false)
@@ -130,11 +166,13 @@ export default function ContentPage() {
     if (!userId) return
     const supabase = createClient()
     if (modal.initial?.id) {
-      await supabase.from('content_posts').update(partial).eq('id', modal.initial.id)
-      setPosts(prev => prev.map(p => p.id === modal.initial!.id ? { ...p, ...partial } : p))
+      const { error } = await supabase.from('content_posts').update(partial).eq('id', modal.initial.id)
+      if (!error) { setPosts(prev => prev.map(p => p.id === modal.initial!.id ? { ...p, ...partial } : p)); show('Post updated!', 'success') }
+      else show('Failed to update post.', 'error')
     } else {
-      const { data } = await supabase.from('content_posts').insert({ ...partial, user_id: userId }).select().single() as { data: ContentPost | null }
-      if (data) setPosts(prev => [data, ...prev])
+      const { data, error } = await supabase.from('content_posts').insert({ ...partial, user_id: userId }).select().single() as { data: ContentPost | null; error: any }
+      if (data && !error) { setPosts(prev => [data, ...prev]); show('Post created!', 'success') }
+      else show('Failed to create post.', 'error')
     }
     setModal({ open: false })
   }
@@ -142,8 +180,9 @@ export default function ContentPage() {
   const deletePost = async (id: string) => {
     if (!confirm('Delete?')) return
     const supabase = createClient()
-    await supabase.from('content_posts').delete().eq('id', id)
-    setPosts(prev => prev.filter(p => p.id !== id))
+    const { error } = await supabase.from('content_posts').delete().eq('id', id)
+    if (!error) { setPosts(prev => prev.filter(p => p.id !== id)); show('Post deleted.', 'success') }
+    else show('Failed to delete post.', 'error')
   }
 
   if (loading) return (
@@ -210,10 +249,13 @@ export default function ContentPage() {
                   </p>
                   <div className="space-y-1">
                     {dayPosts.map(p => (
-                      <div key={p.id} className="rounded p-1 cursor-pointer text-[10px] leading-tight"
+                      <div key={p.id} className="rounded p-1 cursor-pointer text-[10px] leading-tight flex items-center justify-between"
                         style={{ background: `${STATUS_COLOR[(p.status ?? 'idea') as ContentStatus]}20`, color: STATUS_COLOR[(p.status ?? 'idea') as ContentStatus] }}
                         onClick={() => setModal({ open: true, initial: p })}>
-                        {PLATFORM_EMOJI[(p.platform ?? 'linkedin') as Platform]} {p.title}
+                        <span>{PLATFORM_EMOJI[(p.platform ?? 'linkedin') as Platform]} {p.title}</span>
+                        {p.pillar && (
+                          <span className="inline-block h-1.5 w-1.5 rounded-full shrink-0" style={{ background: PILLARS.find(x => x.slug === p.pillar)?.color }} title={PILLARS.find(x => x.slug === p.pillar)?.name} />
+                        )}
                       </div>
                     ))}
                     <button onClick={() => setModal({ open: true, initial: { scheduled_date: dateStr } })}
@@ -248,6 +290,11 @@ export default function ContentPage() {
                       <span className="text-xs">{PLATFORM_EMOJI[(post.platform ?? 'linkedin') as Platform]}</span>
                       <span className="text-xs rounded-full px-2 py-0.5" style={{ background: `${STATUS_COLOR[status]}20`, color: STATUS_COLOR[status] }}>{status}</span>
                       {post.scheduled_date && <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{format(parseISO(post.scheduled_date), 'MMM d')}</span>}
+                      {post.pillar && (
+                        <span className="text-[10px] rounded-full px-2 py-0.5 ml-1" style={{ background: `${PILLARS.find(x => x.slug === post.pillar)?.color}20`, color: PILLARS.find(x => x.slug === post.pillar)?.color }}>
+                          {PILLARS.find(x => x.slug === post.pillar)?.name}
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{post.title}</p>
                     {post.hook && <p className="mt-0.5 text-xs italic" style={{ color: 'var(--text-muted)' }}>"{post.hook}"</p>}

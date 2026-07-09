@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, startOfMonth, startOfWeek, endOfWeek, differenceInCalendarDays } from 'date-fns'
 import { Flame, ChevronRight, Loader2, TrendingUp, DollarSign, Heart, Users } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { EmptyCycle } from '@/components/ui/empty-cycle'
@@ -22,6 +22,8 @@ export default function DashboardPage() {
   const [streak, setStreak]     = useState(0)
   const [loading, setLoading]   = useState(true)
   const [userId, setUserId]     = useState<string | null>(null)
+  const [monthIncome, setMonthIncome] = useState<number | null>(null)
+  const [exerciseDaysThisWeek, setExerciseDaysThisWeek] = useState<number | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -41,9 +43,8 @@ export default function DashboardPage() {
       setCycle(c)
 
       const today = new Date()
-      const start = new Date(c.start_date)
-      const dayNum = Math.min(Math.max(Math.floor((today.getTime() - start.getTime()) / 86400000) + 1, 1), 90)
-      setCurrentDay(dayNum)
+      const dayNum = differenceInCalendarDays(today, parseISO(c.start_date)) + 1
+      setCurrentDay(Math.min(Math.max(dayNum, 1), 90))
 
       const { data: daysData } = await supabase
         .from('days')
@@ -66,6 +67,30 @@ export default function DashboardPage() {
         else break
       }
       setStreak(s)
+
+      // Finance: this-month income
+      const monthStart = format(startOfMonth(today), 'yyyy-MM-dd')
+      const { data: financeData } = await supabase
+        .from('finance_entries')
+        .select('amount')
+        .eq('user_id', user.id)
+        .eq('type', 'income')
+        .gte('date', monthStart) as { data: { amount: number }[] | null }
+      const income = (financeData ?? []).reduce((sum, e) => sum + (e.amount ?? 0), 0)
+      setMonthIncome(income)
+
+      // Health: exercise days this week (Mon–Sun)
+      const weekFrom = format(startOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd')
+      const weekTo   = format(endOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd')
+      const { data: healthData } = await supabase
+        .from('health_logs')
+        .select('exercise_done')
+        .eq('user_id', user.id)
+        .eq('exercise_done', true)
+        .gte('date', weekFrom)
+        .lte('date', weekTo) as { data: { exercise_done: boolean }[] | null }
+      setExerciseDaysThisWeek((healthData ?? []).length)
+
       setLoading(false)
     }
     load()
@@ -131,8 +156,8 @@ export default function DashboardPage() {
         {[
           { icon: <Flame size={20} style={{ color: 'var(--danger)' }} />, label: 'Streak',      value: `${streak}d`,       sub: 'days consistent' },
           { icon: <TrendingUp size={20} style={{ color: 'var(--accent)' }} />, label: 'Cycle Progress', value: `${currentDay}/90`,  sub: 'days elapsed' },
-          { icon: <DollarSign size={20} style={{ color: 'var(--success)' }} />, label: 'Finance', value: '₹0',    sub: 'track in Finance' },
-          { icon: <Heart size={20} style={{ color: '#f43f5e' }} />,    label: 'Health',      value: '—',            sub: 'log in Health' },
+          { icon: <DollarSign size={20} style={{ color: 'var(--success)' }} />, label: 'Income (month)', value: monthIncome !== null ? `₹${monthIncome.toLocaleString('en-IN')}` : '—', sub: 'this month' },
+          { icon: <Heart size={20} style={{ color: '#f43f5e' }} />, label: 'Exercise', value: exerciseDaysThisWeek !== null ? `${exerciseDaysThisWeek}d` : '—', sub: 'this week' },
         ].map(s => (
           <div key={s.label} className="card">
             <div className="flex items-center gap-2">{s.icon}<span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.label}</span></div>

@@ -1,10 +1,20 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { format, parseISO } from 'date-fns'
-import { Loader2, Flame, CheckCircle, SkipForward, Clock, TrendingUp } from 'lucide-react'
+import { format, parseISO, differenceInCalendarDays, getYear, getISOWeek } from 'date-fns'
+import { Loader2, Flame, CheckCircle, SkipForward, Clock, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react'
 import { EmptyCycle } from '@/components/ui/empty-cycle'
+import { useRouter } from 'next/navigation'
 import type { NinetyDayCycle } from '@/types/database'
+
+const WEEKLY_REVIEW_ITEMS = [
+  { id: 'completion_rate', label: 'Reviewed completion rate' },
+  { id: 'goal_progress', label: 'Updated goal progress (/goals)' },
+  { id: 'crm_pipeline', label: 'Reviewed CRM pipeline (/crm)' },
+  { id: 'freelance_projects', label: 'Updated freelance projects (/freelance)' },
+  { id: 'next_week_content', label: 'Planned next week\'s content (/content)' },
+  { id: 'learning_progress', label: 'Updated learning progress (/learning)' },
+]
 
 interface DayData {
   id: string
@@ -14,26 +24,44 @@ interface DayData {
 }
 
 export default function ProgressPage() {
+  const router = useRouter()
   const [cycle, setCycle]   = useState<NinetyDayCycle | null>(null)
   const [days, setDays]     = useState<DayData[]>([])
   const [loading, setLoading] = useState(true)
   const [currentDay, setCurrentDay] = useState(1)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'growth'>('overview')
+  const [weeklyChecks, setWeeklyChecks] = useState<Record<string, boolean>>({})
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const currentISOWeek = `${getYear(new Date())}-W${getISOWeek(new Date())}`
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { setLoading(false); return }
+      setUserId(user.id)
 
-      const { data: c } = await supabase
-        .from('ninety_day_cycles').select('*')
-        .eq('user_id', user.id).eq('is_active', true).single() as { data: NinetyDayCycle | null }
+      const [cRes, sRes] = await Promise.all([
+        supabase.from('ninety_day_cycles').select('*').eq('user_id', user.id).eq('is_active', true).single(),
+        supabase.from('user_settings').select('weekly_review_checks').eq('user_id', user.id).single()
+      ])
+      const c = cRes.data as NinetyDayCycle | null
+      const s = sRes.data as any
+
       if (!c) { setLoading(false); return }
       setCycle(c)
 
+      let loadedChecks = {}
+      if (s?.weekly_review_checks?.week === currentISOWeek) {
+        loadedChecks = s.weekly_review_checks.checks || {}
+      }
+      setWeeklyChecks(loadedChecks)
+
       const today = new Date()
-      const start = new Date(c.start_date)
-      setCurrentDay(Math.min(Math.max(Math.floor((today.getTime() - start.getTime()) / 86400000) + 1, 1), 90))
+      const dayNum = differenceInCalendarDays(today, new Date(c.start_date)) + 1
+      setCurrentDay(Math.min(Math.max(dayNum, 1), 90))
 
       const { data: d } = await supabase
         .from('days').select('id, day_number, date, tasks(status, category)')
@@ -43,6 +71,17 @@ export default function ProgressPage() {
     }
     load()
   }, [])
+
+  const toggleCheck = async (id: string, value: boolean) => {
+    if (!userId) return
+    const newChecks = { ...weeklyChecks, [id]: value }
+    setWeeklyChecks(newChecks)
+    
+    const supabase = createClient()
+    await supabase.from('user_settings').update({
+      weekly_review_checks: { week: currentISOWeek, checks: newChecks }
+    }).eq('user_id', userId)
+  }
 
   if (loading) return (
     <div className="flex items-center justify-center py-24">
@@ -102,12 +141,72 @@ export default function ProgressPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>📊 Progress</h1>
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Day {currentDay} of 90 — {cycle.title}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>📊 Progress</h1>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Day {currentDay} of 90 — {cycle.title}</p>
+        </div>
+        <div className="flex rounded-lg p-1" style={{ background: 'var(--surface)' }}>
+          <button onClick={() => setActiveTab('overview')} className={`rounded-md px-4 py-1.5 text-sm font-medium transition-all ${activeTab === 'overview' ? 'bg-[#6C5CE7] text-white shadow' : 'text-[#64748B] hover:text-[#E2E8F0]'}`}>Overview</button>
+          <button onClick={() => setActiveTab('growth')} className={`rounded-md px-4 py-1.5 text-sm font-medium transition-all ${activeTab === 'growth' ? 'bg-[#6C5CE7] text-white shadow' : 'text-[#64748B] hover:text-[#E2E8F0]'}`}>Growth Tracker</button>
+        </div>
       </div>
 
-      {/* Summary cards */}
+      {activeTab === 'growth' ? (
+        <div className="card">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#2D2D3F]">
+                <th className="pb-2 text-[#64748B] font-medium">Day</th>
+                <th className="pb-2 text-[#64748B] font-medium">Date</th>
+                <th className="pb-2 text-[#64748B] font-medium text-center">LinkedIn</th>
+                <th className="pb-2 text-[#64748B] font-medium text-center">GitHub</th>
+                <th className="pb-2 text-[#64748B] font-medium text-center">Twitter</th>
+                <th className="pb-2 text-[#64748B] font-medium text-center">Freelance</th>
+                <th className="pb-2 text-[#64748B] font-medium text-right">Done %</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#2D2D3F]">
+              {pastDays.slice().reverse().map(day => {
+                const getCatStats = (cat: string) => {
+                  const catTasks = day.tasks.filter(t => t.category === cat)
+                  const total = catTasks.length
+                  const done = catTasks.filter(t => t.status === 'completed').length
+                  return { total, done }
+                }
+                const cats = ['linkedin', 'github', 'twitter', 'freelance']
+                
+                return (
+                  <tr key={day.id} className="group transition-colors hover:bg-[#1A1A26] cursor-pointer" onClick={() => router.push(`/day/${day.day_number}`)}>
+                    <td className="py-2 font-medium text-[#E2E8F0]">Day {day.day_number}</td>
+                    <td className="py-2 text-[#94A3B8]">{format(parseISO(day.date), 'MMM d')}</td>
+                    {cats.map(cat => {
+                      const { total, done } = getCatStats(cat)
+                      const pct = total > 0 ? done / total : -1
+                      const color = pct === 1 ? 'var(--success)' : pct >= 0 ? 'var(--warning)' : 'var(--border)'
+                      return (
+                        <td key={cat} className="py-2 text-center">
+                          {total > 0 ? <span style={{ color }}>{done}/{total}</span> : <span className="text-[#64748B]">-</span>}
+                        </td>
+                      )
+                    })}
+                    <td className="py-2 text-right">
+                       {(() => {
+                         const total = day.tasks.length
+                         const done = day.tasks.filter(t => t.status === 'completed').length
+                         const pct = total > 0 ? Math.round((done / total) * 100) : 0
+                         return <span className="font-bold" style={{ color: pct >= 80 ? 'var(--success)' : pct >= 50 ? 'var(--warning)' : 'var(--danger)' }}>{pct}%</span>
+                       })()}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <>
+          {/* Summary cards */}
       <div className="grid grid-cols-4 gap-4">
         {[
           { icon: <Flame size={18} style={{ color: 'var(--danger)' }} />, label: 'Streak', value: `${streak}d` },
@@ -227,6 +326,38 @@ export default function ProgressPage() {
           })}
         </div>
       </div>
+      
+      {/* Weekly Review Card */}
+      <div className="card">
+        <div className="flex cursor-pointer items-center justify-between" onClick={() => setReviewOpen(!reviewOpen)}>
+          <div className="flex items-center gap-3">
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Weekly Review</h3>
+            <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: Object.values(weeklyChecks).filter(Boolean).length === 6 ? 'var(--success-soft)' : 'var(--surface2)', color: Object.values(weeklyChecks).filter(Boolean).length === 6 ? 'var(--success)' : 'var(--text-muted)' }}>
+              {Object.values(weeklyChecks).filter(Boolean).length}/6 done
+            </span>
+          </div>
+          {reviewOpen ? <ChevronUp size={16} className="text-[#64748B]" /> : <ChevronDown size={16} className="text-[#64748B]" />}
+        </div>
+        {reviewOpen && (
+          <div className="mt-4 space-y-2 border-t border-[#2D2D3F] pt-4">
+            {WEEKLY_REVIEW_ITEMS.map(item => (
+              <label key={item.id} className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-[#1A1A26]">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-[#2D2D3F] bg-[#0A0A0F] text-[#6C5CE7] focus:ring-[#6C5CE7]"
+                  checked={!!weeklyChecks[item.id]}
+                  onChange={(e) => toggleCheck(item.id, e.target.checked)}
+                />
+                <span className="text-sm font-medium" style={{ color: weeklyChecks[item.id] ? 'var(--text-muted)' : 'var(--text)', textDecoration: weeklyChecks[item.id] ? 'line-through' : 'none' }}>
+                  {item.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+      </>
+      )}
     </div>
   )
 }

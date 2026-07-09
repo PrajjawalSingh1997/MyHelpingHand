@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Pencil, Trash2, Loader2, BookOpen, ExternalLink } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 import type { LearningResource } from '@/types/database'
 
 const STATUSES = ['not_started', 'in_progress', 'completed', 'on_hold'] as const
@@ -17,7 +18,7 @@ const TYPES = ['course', 'book', 'tutorial', 'documentation', 'video', 'podcast'
 
 function ResourceForm({ initial, onSave, onCancel }: {
   initial?: Partial<LearningResource>
-  onSave: (r: Partial<LearningResource>) => void
+  onSave: (r: Partial<LearningResource>) => Promise<void>
   onCancel: () => void
 }) {
   const [f, setF] = useState({
@@ -30,6 +31,16 @@ function ResourceForm({ initial, onSave, onCancel }: {
     total_lessons: initial?.total_lessons ?? '',
     completed_lessons: initial?.completed_lessons ?? '',
   })
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+
+  const handleSave = async () => {
+    if (!f.title.trim()) { setError('Title is required.'); return }
+    setSaving(true); setError('')
+    await onSave(f)
+    setSaving(false)
+  }
+
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
       <div className="flex gap-3">
@@ -72,8 +83,13 @@ function ResourceForm({ initial, onSave, onCancel }: {
         <label className="label">Notes</label>
         <textarea value={f.notes ?? ''} onChange={e => setF({ ...f, notes: e.target.value })} rows={2} className="input mt-1 w-full resize-none" />
       </div>
+      {error && <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
       <div className="flex gap-2">
-        <button onClick={() => onSave(f)} className="btn-primary text-sm">Save</button>
+        <button onClick={handleSave} disabled={saving}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: saving ? 0.6 : 1 }}>
+          {saving && <Loader2 size={14} className="animate-spin" />}
+          {saving ? 'Saving…' : 'Save Resource'}
+        </button>
         <button onClick={onCancel} className="btn-ghost text-sm">Cancel</button>
       </div>
     </div>
@@ -81,6 +97,7 @@ function ResourceForm({ initial, onSave, onCancel }: {
 }
 
 export default function LearningPage() {
+  const { show } = useToast()
   const [resources, setResources] = useState<LearningResource[]>([])
   const [loading, setLoading]     = useState(true)
   const [userId, setUserId]       = useState<string | null>(null)
@@ -104,23 +121,26 @@ export default function LearningPage() {
   const addResource = async (partial: Partial<LearningResource>) => {
     if (!userId) return
     const supabase = createClient()
-    const { data } = await supabase.from('learning_resources').insert({ ...partial, user_id: userId }).select().single() as { data: LearningResource | null }
-    if (data) setResources(prev => [data, ...prev])
+    const { data, error } = await supabase.from('learning_resources').insert({ ...partial, user_id: userId }).select().single() as { data: LearningResource | null; error: any }
+    if (data && !error) { setResources(prev => [data, ...prev]); show('Resource added!', 'success') }
+    else show('Failed to add resource.', 'error')
     setAdding(false)
   }
 
   const updateResource = async (id: string, partial: Partial<LearningResource>) => {
     const supabase = createClient()
-    await supabase.from('learning_resources').update(partial).eq('id', id)
-    setResources(prev => prev.map(r => r.id === id ? { ...r, ...partial } : r))
+    const { error } = await supabase.from('learning_resources').update(partial).eq('id', id)
+    if (!error) { setResources(prev => prev.map(r => r.id === id ? { ...r, ...partial } : r)); show('Resource updated!', 'success') }
+    else show('Failed to update resource.', 'error')
     setEditingId(null)
   }
 
   const deleteResource = async (id: string) => {
     if (!confirm('Delete this resource?')) return
     const supabase = createClient()
-    await supabase.from('learning_resources').delete().eq('id', id)
-    setResources(prev => prev.filter(r => r.id !== id))
+    const { error } = await supabase.from('learning_resources').delete().eq('id', id)
+    if (!error) { setResources(prev => prev.filter(r => r.id !== id)); show('Resource deleted.', 'success') }
+    else show('Failed to delete.', 'error')
   }
 
   if (loading) return (

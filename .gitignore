@@ -33,3 +33,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sensitive / personal data — never commit
+supabase/admin-seed.sql
+supabase/seed-my-data.sql
+supabase/my-90-day-plan.json
