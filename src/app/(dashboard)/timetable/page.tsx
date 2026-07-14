@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Check, RotateCcw, Pencil, Trash2, Plus, Loader2 } from 'lucide-react'
+import { Check, RotateCcw, Pencil, Trash2, Plus, Loader2, History } from 'lucide-react'
 import type { TimetablePlan, TimetableBlock } from '@/types/database'
 
 function getTimetableDay(): string {
@@ -205,13 +205,19 @@ export default function TimetablePage() {
       setCheckDate(today)
 
       const [pRes, cRes] = await Promise.all([
-        supabase.from('timetable_plans').select('*').eq('user_id', user.id).order('plan_type'),
+        supabase.from('timetable_plans').select('*').eq('user_id', user.id)
+          .lte('effective_from', today).order('effective_from', { ascending: false }).order('plan_type'),
         supabase.from('timetable_checks').select('block_ids').eq('user_id', user.id).eq('date', today).single(),
       ])
-      const p = pRes.data as TimetablePlan[] | null
+      const allPlans = pRes.data as TimetablePlan[] | null
       const c = cRes.data as { block_ids: string[] } | null
 
-      setPlans(p ?? [])
+      // Keep only the latest version of each plan type
+      const latestMap = new Map<string, TimetablePlan>()
+      for (const plan of (allPlans ?? [])) {
+        if (!latestMap.has(plan.plan_type)) latestMap.set(plan.plan_type, plan)
+      }
+      setPlans(Array.from(latestMap.values()).sort((a, b) => a.plan_type.localeCompare(b.plan_type)))
       setChecks(new Set((c?.block_ids as string[]) ?? []))
       setLoading(false)
     }
@@ -244,12 +250,25 @@ export default function TimetablePage() {
     setChecks(new Set())
   }
 
-  const updatePlan = useCallback(async (planType: string, blocks: TimetableBlock[]) => {
+  const updatePlan = useCallback(async (planId: string, blocks: TimetableBlock[]) => {
     if (!userId) return
     const supabase = createClient()
-    await supabase.from('timetable_plans').update({ blocks: blocks as any }).eq('user_id', userId).eq('plan_type', planType)
-    setPlans(prev => prev.map(p => p.plan_type === planType ? { ...p, blocks } : p))
+    await supabase.from('timetable_plans').update({ blocks: blocks as any }).eq('id', planId)
+    setPlans(prev => prev.map(p => p.id === planId ? { ...p, blocks } : p))
   }, [userId])
+
+  const startNewCycle = async () => {
+    if (!userId || plans.length === 0) return
+    if (!confirm('Archive current plans and start a new cycle with today\'s date?')) return
+    const supabase = createClient()
+    const today = getTimetableDay()
+    const { data } = await supabase.from('timetable_plans')
+      .upsert(
+        plans.map(p => ({ user_id: userId, plan_type: p.plan_type, name: p.name, blocks: p.blocks, effective_from: today })),
+        { onConflict: 'user_id,plan_type,effective_from' }
+      ).select()
+    if (data) setPlans(data as TimetablePlan[])
+  }
 
   if (loading) return (
     <div className="flex items-center justify-center py-24">
@@ -269,10 +288,16 @@ export default function TimetablePage() {
             Resets at 5:00 AM daily • {totalChecked > 0 ? `${totalChecked} blocks done today` : 'Check off blocks as you complete them'}
           </p>
         </div>
-        <button onClick={resetAll} className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition-all"
-          style={{ background: 'rgba(255,107,107,0.15)', color: 'var(--danger)' }}>
-          <RotateCcw size={12} /> Reset
-        </button>
+        <div className="flex gap-2">
+          <button onClick={startNewCycle} className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition-all"
+            style={{ background: 'rgba(108,92,231,0.15)', color: 'var(--accent)' }}>
+            <History size={12} /> New Cycle
+          </button>
+          <button onClick={resetAll} className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition-all"
+            style={{ background: 'rgba(255,107,107,0.15)', color: 'var(--danger)' }}>
+            <RotateCcw size={12} /> Reset
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -296,7 +321,7 @@ export default function TimetablePage() {
           plan={activePlan}
           checks={checks}
           onToggle={toggleCheck}
-          onUpdatePlan={blocks => updatePlan(tab, blocks)}
+          onUpdatePlan={blocks => updatePlan(activePlan.id, blocks)}
         />
       )}
 

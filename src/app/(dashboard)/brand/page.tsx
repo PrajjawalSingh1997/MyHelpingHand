@@ -130,18 +130,19 @@ export default function BrandHubPage() {
     if (!userId) return
     const newChecks = { ...profileChecks, [id]: value }
     setProfileChecks(newChecks)
-    
+
     const supabase = createClient()
-    await supabase.from('brand_profile_checklist').upsert({
+    const { error } = await supabase.from('brand_profile_checklist').upsert({
       user_id: userId,
       checklist: newChecks
     })
+    if (error) show('Could not save — run fix-missing-tables.sql in Supabase first.', 'error')
   }
 
   const toggleDailyAction = async (id: string, value: boolean) => {
     if (!userId) return
     const today = format(new Date(), 'yyyy-MM-dd')
-    
+
     // If date changed, reset
     let currentActions = dailyActions
     if (actionDate !== today) {
@@ -151,13 +152,14 @@ export default function BrandHubPage() {
 
     const newActions = { ...currentActions, [id]: value }
     setDailyActions(newActions)
-    
+
     const supabase = createClient()
-    await supabase.from('brand_daily_actions').upsert({
+    const { error } = await supabase.from('brand_daily_actions').upsert({
       user_id: userId,
       date: today,
       actions_done: newActions
     })
+    if (error) show('Could not save — run fix-missing-tables.sql in Supabase first.', 'error')
   }
 
   const saveMetrics = async () => {

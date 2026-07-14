@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withReticle } from "@reticlehq/next";
 
 const nextConfig: NextConfig = {
   images: {
@@ -6,4 +7,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withReticle(nextConfig);

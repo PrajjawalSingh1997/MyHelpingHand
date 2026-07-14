@@ -289,6 +289,7 @@ export interface Database {
           plan_type: PlanType
           name: string
           blocks: TimetableBlock[]
+          effective_from: string
         }
         Insert: {
           id?: string
@@ -296,10 +297,12 @@ export interface Database {
           plan_type: PlanType
           name: string
           blocks?: TimetableBlock[]
+          effective_from?: string
         }
         Update: {
           name?: string
           blocks?: TimetableBlock[]
+          effective_from?: string
         }
       }
       timetable_checks: {

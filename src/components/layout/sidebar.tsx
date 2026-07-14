@@ -11,7 +11,7 @@ import {
 const ICON_MAP: Record<string, React.ElementType> = {
   LayoutDashboard, CalendarCheck, Calendar, TrendingUp, Clock, Target,
   Heart, DollarSign, Users, FileText, PenSquare, BookOpen, Briefcase,
-  Code2, Sparkles, Settings, ShieldCheck, CheckSquare,
+  Code2, Sparkles, Settings, ShieldCheck, CheckSquare, Rocket,
 };
 
 const SLUG_HREF: Record<string, string> = {
