@@ -1,7 +1,18 @@
 -- ================================================================
--- SAFE ADDITIVE FIX — Run this in Supabase SQL Editor
--- Does NOT drop anything. Safe to run on an existing database.
--- Adds: habits, habit_logs, brand tables, missing columns, modules
+-- Migration 003: Missing Tables and Columns
+-- Converted from: supabase/fix-missing-tables.sql
+-- Originally applied: ~2026-07-08 directly in Supabase SQL Editor
+-- Converted to migration file: 2026-07-15
+--
+-- Contains:
+--   1. Missing columns on existing tables (user_settings, user_profiles, health_logs, content_posts)
+--   2. habits + habit_logs tables with RLS
+--   3. brand_metrics, brand_profile_checklist, brand_daily_actions tables with RLS
+--   4. Modules: Habits + Brand Hub inserts
+--   5. user_module_settings wiring for all existing users
+--
+-- STATUS: Already applied to live Supabase database.
+-- Safe to re-run (all statements use IF NOT EXISTS / ON CONFLICT DO NOTHING).
 -- ================================================================
 
 -- ── 1. Missing columns on existing tables ───────────────────────
