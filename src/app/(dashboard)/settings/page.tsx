@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Save, LogOut } from 'lucide-react'
+import { Loader2, Save, LogOut, Download } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { exportUserData, downloadJson } from '@/lib/export'
 
 interface ProfileData {
   display_name: string | null
@@ -41,6 +42,7 @@ export default function SettingsPage() {
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -109,6 +111,20 @@ export default function SettingsPage() {
       setConfirmPassword('')
     }
     setTimeout(() => setMsg(null), 4000)
+  }
+
+  const exportData = async () => {
+    if (!userId) return
+    setExporting(true)
+    try {
+      const data = await exportUserData(userId)
+      downloadJson(`life-os-export-${new Date().toISOString().slice(0, 10)}.json`, data)
+      setMsg({ type: 'success', text: 'Export downloaded!' })
+    } catch {
+      setMsg({ type: 'error', text: 'Export failed. Please try again.' })
+    }
+    setExporting(false)
+    setTimeout(() => setMsg(null), 3000)
   }
 
   const signOut = async () => {
@@ -207,13 +223,7 @@ export default function SettingsPage() {
               <option value="sunday">Sunday</option>
             </select>
           </div>
-          <div className="flex-1">
-            <label className="label">Daily Reminder</label>
-            <input type="time" value={settings.daily_reminder_time ?? '06:00'} onChange={e => setSettings({ ...settings, daily_reminder_time: e.target.value })} className="input mt-1 w-full" />
-            <p className="mt-1 text-[10px]" style={{ color: 'var(--text-muted)' }}>
-              Saved to your profile, but in-app push notifications are not yet active.
-            </p>
-          </div>
+
         </div>
         <button onClick={saveSettings} disabled={savingSettings}
           className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: savingSettings ? 0.6 : 1 }}>
@@ -255,6 +265,19 @@ export default function SettingsPage() {
           </div>
         </div>
         <button onClick={changePassword} className="btn-primary text-sm">Update Password</button>
+      </div>
+
+      {/* Data export */}
+      <div className="card">
+        <h2 className="mb-2 text-sm font-semibold" style={{ color: 'var(--text)' }}>Your Data</h2>
+        <p className="mb-4 text-xs" style={{ color: 'var(--text-muted)' }}>
+          Download every table you own — tasks, goals, health, finance, CRM, habits, and everything else — as one JSON file.
+        </p>
+        <button onClick={exportData} disabled={exporting}
+          className="btn-primary flex items-center gap-2 text-sm" style={{ opacity: exporting ? 0.6 : 1 }}>
+          {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+          {exporting ? 'Exporting…' : 'Export My Data'}
+        </button>
       </div>
 
       {/* Sign out */}

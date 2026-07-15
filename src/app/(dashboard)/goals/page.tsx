@@ -228,14 +228,13 @@ export default function GoalsPage() {
   const toggleGoal = async (id: string) => {
     const goal = goals.find(g => g.id === id)
     if (!goal) return
-    let newStatus: GoalStatus
     if (goal.status === 'completed') {
-      // Restore: if it has a numeric target it was being tracked → in_progress, otherwise not_started
-      newStatus = (goal.target_value !== null && goal.target_value !== '') ? 'in_progress' : 'not_started'
+      // Restore whatever status the goal had before it was marked complete
+      const restored = (goal.previous_status ?? 'not_started') as GoalStatus
+      await updateGoal(id, { status: restored, previous_status: null })
     } else {
-      newStatus = 'completed'
+      await updateGoal(id, { status: 'completed', previous_status: goal.status })
     }
-    await updateGoal(id, { status: newStatus })
   }
 
   if (loading) return (

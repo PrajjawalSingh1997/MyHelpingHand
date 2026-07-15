@@ -31,8 +31,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const theme = settingsRes.data?.theme || 'dark'
 
   return (
-    <div className="flex min-h-screen">
-      <script dangerouslySetInnerHTML={{ __html: `document.documentElement.setAttribute('data-theme', '${theme === 'system' ? '' : theme}');` }} />
+    <div className="flex min-h-screen" suppressHydrationWarning>
+      <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `document.documentElement.setAttribute('data-theme', '${theme === 'system' ? '' : theme}');` }} />
       <Sidebar
         modules={enabledModules}
         displayName={profile?.display_name ?? user.email ?? 'User'}

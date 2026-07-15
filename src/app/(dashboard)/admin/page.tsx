@@ -42,9 +42,8 @@ export default function AdminPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/login'); return }
 
-      const { data: profile } = await supabase
-        .from('user_profiles').select('role').eq('id', user.id).single() as { data: { role: string } | null }
-      if (profile?.role !== 'super_admin') { router.push('/'); return }
+      const { data: ownProfile } = await supabase.from('user_profiles').select('role').eq('id', user.id).single()
+      if (ownProfile?.role !== 'super_admin') { router.push('/'); return }
       setIsAdmin(true)
 
       const [uRes, mRes, sRes] = await Promise.all([

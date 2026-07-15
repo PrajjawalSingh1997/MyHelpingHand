@@ -250,6 +250,7 @@ export interface Database {
           title: string
           description: string | null
           status: GoalStatus
+          previous_status: GoalStatus | null
           target_value: string | null
           current_value: string | null
           unit: string | null
@@ -264,6 +265,7 @@ export interface Database {
           title: string
           description?: string | null
           status?: GoalStatus
+          previous_status?: GoalStatus | null
           target_value?: string | null
           current_value?: string | null
           unit?: string | null
@@ -275,6 +277,7 @@ export interface Database {
           title?: string
           description?: string | null
           status?: GoalStatus
+          previous_status?: GoalStatus | null
           target_value?: string | null
           current_value?: string | null
           unit?: string | null
@@ -381,6 +384,7 @@ export interface Database {
           amount: number
           currency: string
           created_at: string
+          is_debt_payment: boolean
         }
         Insert: {
           id?: string
@@ -391,6 +395,7 @@ export interface Database {
           description?: string | null
           amount: number
           currency?: string
+          is_debt_payment?: boolean
         }
         Update: {
           date?: string
@@ -399,6 +404,7 @@ export interface Database {
           description?: string | null
           amount?: number
           currency?: string
+          is_debt_payment?: boolean
         }
       }
       crm_leads: {
