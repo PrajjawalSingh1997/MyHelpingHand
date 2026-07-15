@@ -165,6 +165,7 @@ export default function FinancePage() {
       description: 'Debt repayment',
       amount: parseFloat(debtPaid),
       currency: 'INR',
+      is_debt_payment: true,
     })
     setCurrentDebt(newDebt)
     const paid = parseFloat(debtPaid)
@@ -177,6 +178,7 @@ export default function FinancePage() {
       description: 'Debt repayment',
       amount: paid,
       currency: 'INR',
+      is_debt_payment: true,
       created_at: new Date().toISOString(),
     } as FinanceEntry, ...prev])
     setDebtPaid('')
@@ -308,7 +310,9 @@ export default function FinancePage() {
                   </p>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => { setEditingId(entry.id); setAdding(false) }} className="rounded p-1" style={{ color: 'var(--text-muted)' }}><Pencil size={13} /></button>
-                    <button onClick={() => deleteEntry(entry.id)} className="rounded p-1" style={{ color: 'var(--danger)' }}><Trash2 size={13} /></button>
+                    {!entry.is_debt_payment && (
+                      <button onClick={() => deleteEntry(entry.id)} className="rounded p-1" style={{ color: 'var(--danger)' }}><Trash2 size={13} /></button>
+                    )}
                   </div>
                 </div>
               </div>

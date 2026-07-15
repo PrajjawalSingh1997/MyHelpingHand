@@ -309,6 +309,7 @@ export default function CrmPage() {
   const filtered = filterStage === 'all' ? leads : leads.filter(l => l.stage === filterStage)
   const pipeline = leads.filter(l => !['lost', 'client'].includes(l.stage ?? '')).reduce((s, l) => s + (l.deal_value ?? 0), 0)
   const counts = Object.fromEntries(STAGES.map(s => [s, leads.filter(l => l.stage === s).length]))
+  const overdueLeads = leads.filter(l => l.next_followup && new Date(l.next_followup) < new Date())
 
   return (
     <div className="space-y-6">
@@ -321,6 +322,18 @@ export default function CrmPage() {
           <Plus size={16} /> Add Lead
         </button>
       </div>
+
+      {overdueLeads.length > 0 && (
+        <div className="rounded-lg border p-3 mb-4 flex items-center gap-2"
+          style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
+          <span style={{ color: 'var(--warning)' }}>
+            ⚠️ {overdueLeads.length} lead{overdueLeads.length > 1 ? 's' : ''} with overdue follow-ups:
+          </span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+            {overdueLeads.map(l => l.name).join(', ')}
+          </span>
+        </div>
+      )}
 
       {/* Pipeline kanban summary */}
       <div className="grid grid-cols-6 gap-2">
