@@ -119,6 +119,12 @@ Superseded by the audited, verified-against-source set in `docs/IndustryDoc/` (`
 - **Reason**: Frozen changelog, not kept current as its own header required; login-workflow section superseded by `IndustryDoc/LLD_LifeOS.md` §3.
 - **Still Relevant?**: Historical reference only.
 
+### apply-migrations-2026-07-16.mjs
+- **Original Path**: `scripts/apply-migrations-2026-07-16.mjs`
+- **Archived**: 2026-07-16
+- **Reason**: One-time script — connected via `DATABASE_URL` (pooler connection; the direct `db.*.supabase.co` host is IPv6-only) and applied migrations 003-006 directly to production. Ran successfully; verified `goals.previous_status`, `finance_entries.is_debt_payment`, `habits`, and `brand_metrics` all exist post-run.
+- **Still Relevant?**: No — migrations 003-006 are now applied. Re-running is harmless (every statement in those files is idempotent) but unnecessary.
+
 ---
 
 ## Relocated (not archived)
