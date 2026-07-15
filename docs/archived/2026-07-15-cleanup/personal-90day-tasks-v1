@@ -1,0 +1,1026 @@
+# PRAJJAWAL SINGH — 90-DAY PERSONAL TASK FILE
+
+**Start Date:** March 24, 2026 (Day 1)
+**End Date:** June 21, 2026 (Day 90)
+**Rule:** Check off `[x]` as you complete. Aim for 5/7 days minimum.
+
+---
+
+# WEEK 1: PROFILE SETUP + FIRST POSTS (Mar 24 – Mar 30)
+
+---
+
+## DAY 1 — Monday, March 24
+
+**Plan:** A (Standard Day)
+
+### 12:00 PM – 1:30 PM — LinkedIn Profile Setup
+- [ ] Update headline → `Backend Engineer | Building Rentlyf (Property Management SaaS) | TypeScript · Node.js · PostgreSQL · Next.js | Open to Freelance`
+- [ ] Write About section:
+```
+Electrical & Electronics Engineering graduate passionate about building real-world software.
+
+Currently working as a backend developer on Rentlyf — a SaaS property management platform — with a small startup team.
+
+My work includes:
+• Backend development (200+ APIs, 16 modules)
+• Admin dashboard (22-page control panel with Next.js)
+• API testing & QA
+• Architecture design with TypeScript, Express, PostgreSQL, Redis, Prisma
+
+Open to freelance web development projects.
+```
+- [ ] Add professional profile photo
+- [ ] Add banner image (code editor screenshot or tech graphic)
+- [ ] Add Experience → "Backend Engineer at Techwara" (Dec 2025 – Present)
+- [ ] Add Skills → TypeScript, Node.js, PostgreSQL, React, Next.js, Express.js, Prisma, Redis
+- [ ] Add Education → KLE Dr. M.S. Sheshgiri College of Engineering, Belagavi
+- [ ] Turn on "Open to Work" (Freelance + Full-time)
+- [ ] Connect with Harshit & Shiv
+- [ ] Send 20 connection requests to developers
+
+### 1:30 PM – 4:30 PM — Rentlyf Coding Block 1 (3 hrs)
+- [ ] Dashboard / Testing work
+
+### 5:00 PM – 7:00 PM — Rentlyf Coding Block 2 (2 hrs)
+- [ ] Continue coding / bug fixes
+
+### 8:00 PM – 9:30 PM — Content Creation + Posting
+- [ ] Write and publish Day 1 LinkedIn post:
+```
+Day 1 of building in public 🚀
+
+I graduated in Electrical & Electronics Engineering in July 2025.
+After that, I made a decision — I wanted to build software.
+
+In December 2025, I joined a small startup team to build the backend
+of a SaaS product — a property management platform for landlords.
+
+Since then, I've:
+
+→ Built 200+ backend APIs
+→ Designed 16 backend modules
+→ Worked with TypeScript, Node.js, PostgreSQL, Redis, and Prisma
+→ Started building a 22-page admin dashboard with Next.js
+
+From today, I'm sharing this journey publicly —
+the code, the bugs, the lessons, and the growth.
+
+Let's build. 🛠️
+
+#buildinpublic #webdevelopment #backenddeveloper #startup
+```
+
+### 10:00 PM – 11:30 PM — GitHub Profile Setup
+- [ ] Create a new repo named after your GitHub username (for profile README)
+- [ ] Add README.md with this content:
+```markdown
+# Hi, I'm Prajjawal Singh 👋
+
+**Backend Engineer** building Rentlyf — a SaaS property management platform.
+
+## 🔧 What I'm Working On
+- 🏠 **Rentlyf Backend** — 200+ APIs, 16 modules, TypeScript + Express + PostgreSQL
+- 📊 **Admin Dashboard** — 22-page control panel with Next.js + TanStack Query + Recharts
+- 🧪 **QA & Testing** — Manual testing, edge case analysis, API verification
+
+## 🛠️ Tech Stack
+**Backend:** Node.js · TypeScript · Express v5 · PostgreSQL · Prisma · Redis · BullMQ
+**Frontend:** Next.js 14 · React · TailwindCSS · Shadcn UI · TanStack Query
+**Tools:** JWT · Zod · Sentry · Pino · Socket.io · Cloudinary
+
+## 📫 Connect
+- [LinkedIn](your-link) · [Portfolio](your-link) · [Twitter](your-link)
+```
+- [ ] Add profile photo to GitHub
+- [ ] Update GitHub bio → "Backend Engineer | Building Rentlyf | TypeScript + Node.js"
+
+### 1:00 AM – 2:00 AM — Learning
+- [ ] Browse Three.js / React Three Fiber tutorials (for 3D portfolio)
+- [ ] Bookmark 3-4 good tutorial videos
+
+### 4:00 AM — Daily Wrap
+- [ ] Note tomorrow's tasks
+- [ ] Check Discord for team updates
+
+---
+
+## DAY 2 — Tuesday, March 25
+
+**Plan:** A (Standard Day)
+
+### 12:30 PM – 1:30 PM — Networking
+- [ ] Reply to any comments on Day 1 post
+- [ ] Comment on 5-10 LinkedIn developer posts
+- [ ] Accept connection requests
+- [ ] Send 10 more connection requests
+
+### 1:30 PM – 7:00 PM — Rentlyf (5 hrs with break)
+- [ ] Dashboard / Testing work
+
+### 8:00 PM – 9:30 PM — Content + Posting
+- [ ] Write and publish Day 2 LinkedIn post:
+```
+From Electrical Engineering to Backend Development —
+here's why I made the switch.
+
+During my B.E., I loved the logic side of engineering —
+circuits, algorithms, problem-solving.
+
+But I realized I wanted to build things people actually use every day.
+
+Web development gave me that.
+
+In just a few months, I went from writing my first API
+to building a full backend system with:
+
+• 16 modules
+• JWT authentication
+• Redis caching
+• Background job processing
+• Real-time notifications
+
+The engineering mindset transfers perfectly to software.
+Logic is logic — whether it's circuits or code.
+
+#careertransition #engineering #webdevelopment
+```
+
+### 10:00 PM – 12:00 AM — Twitter/X Setup
+- [ ] Create/update Twitter profile
+- [ ] Update bio → `Backend Engineer building @Rentlyf 🏠 | 200+ APIs in production | TypeScript + Node.js + PostgreSQL | Sharing the startup journey | Open to freelance 🚀`
+- [ ] Add profile photo + banner
+- [ ] Follow 50 dev accounts (search: React, Node.js, TypeScript, startup founders, Indian devs)
+
+### 1:00 AM – 2:00 AM — Learning
+- [ ] Watch 1 Three.js beginner tutorial
+- [ ] Note down key Three.js concepts (scene, camera, renderer, mesh)
+
+---
+
+## DAY 3 — Wednesday, March 26
+
+**Plan:** C (Content + GitHub Day)
+
+### 12:00 PM – 2:00 PM — Networking
+- [ ] Reply to comments on posts
+- [ ] Comment on 10 LinkedIn posts
+- [ ] Send 10 connection requests
+
+### 2:00 PM – 4:00 PM — Rentlyf Light Coding (2 hrs)
+- [ ] Bug fixes / small tasks
+
+### 4:00 PM – 7:00 PM — GitHub: Build `express-typescript-api-starter` Repo
+- [ ] Create new repo `express-typescript-api-starter`
+- [ ] Set up: Express + TypeScript + Prisma + Zod boilerplate
+- [ ] Include: folder structure, sample routes, controller-service pattern, validation example
+- [ ] Write clean README.md with: Description, Features, Tech Stack, Setup instructions, Folder Structure diagram
+- [ ] Add screenshots of folder structure
+- [ ] Push to GitHub
+- [ ] Pin repo on profile
+
+### 8:00 PM – 9:00 PM — Twitter Post
+- [ ] Post first tweet:
+```
+Started sharing my code publicly.
+
+First repo: A clean Express + TypeScript + Prisma API starter.
+
+Building in public because the best way to learn is to ship.
+
+github.com/[your-username]/express-typescript-api-starter
+
+#buildinpublic #nodejs #typescript
+```
+
+### 9:00 PM – 12:00 AM — Batch Write Future Posts
+- [ ] Draft Day 4 LinkedIn post (architecture lessons)
+- [ ] Draft Day 5 Twitter post (controllers tip)
+- [ ] Draft Day 6 LinkedIn post (team post)
+- [ ] Save all 3 drafts in a notes file
+
+### 1:00 AM – 2:30 AM — Learning
+- [ ] Follow React Three Fiber (R3F) "Getting Started" tutorial
+- [ ] Try rendering a basic 3D cube in a test Next.js page
+
+---
+
+## DAY 4 — Thursday, March 27
+
+**Plan:** B (Coding + Freelancing)
+
+### 12:30 PM – 1:00 PM — Quick Networking
+- [ ] Reply to comments, accept connections
+
+### 1:00 PM – 7:00 PM — Rentlyf Coding Marathon (6 hrs)
+- [ ] Dashboard / Testing work
+
+### 8:00 PM – 9:00 PM — Post pre-written LinkedIn post
+- [ ] Publish Day 4 post:
+```
+What building a startup backend taught me about software architecture.
+
+When I started, I thought backend development = writing APIs.
+
+After building 16 modules and 200+ endpoints for a real product,
+I learned it's actually about:
+
+1. How modules talk to each other
+2. Where to put business logic (services, not controllers)
+3. How to validate every input (Zod saved us countless times)
+4. How to cache expensive queries (Redis, 5-minute TTL)
+5. How to handle background jobs (BullMQ for heavy tasks)
+
+The architecture matters more than the code.
+
+What's the biggest architecture lesson you've learned?
+
+#softwarearchitecture #backend #startup
+```
+
+### 10:00 PM – 12:00 AM — Portfolio: Next.js Project Setup
+- [ ] `npx create-next-app@latest portfolio-3d` (TypeScript, TailwindCSS, App Router)
+- [ ] Install dependencies: `framer-motion`, `@react-three/fiber`, `@react-three/drei`, `three`
+- [ ] Set up project structure: `/app`, `/components`, `/sections`
+- [ ] Create basic layout with dark theme
+- [ ] Push initial commit to GitHub repo `portfolio-3d`
+
+### 1:00 AM – 2:00 AM — Portfolio: Sketch wireframe
+- [ ] Draw rough wireframe of all sections (Hero, About, Experience, Tech Stack, Projects, Blog, Contact)
+
+---
+
+## DAY 5 — Friday, March 28
+
+**Plan:** A (Standard Day)
+
+### 12:30 PM – 1:30 PM — Networking
+- [ ] Comment on 5-10 posts, reply to comments, send connections
+
+### 1:30 PM – 7:00 PM — Rentlyf (5 hrs)
+- [ ] Dashboard / Testing work
+
+### 8:00 PM – 8:30 PM — Twitter Post
+- [ ] Publish:
+```
+Hot take: The controller should NEVER touch the database.
+
+Controllers handle HTTP.
+Services handle business logic.
+Prisma handles data.
+
+Clean separation = maintainable code at scale.
+
+#nodejs #typescript #cleancode
+```
+
+### 9:00 PM – 12:00 AM — Portfolio: Hero Section
+- [ ] Build Hero component with your name + title
+- [ ] Add 3D animated background (rotating sphere/particles using R3F)
+- [ ] Add Framer Motion entrance animation for text
+- [ ] Add "Download CV" and "Contact" buttons
+- [ ] Test responsiveness
+
+### 1:00 AM – 2:00 AM — Portfolio: Continue Hero polish
+- [ ] Fine-tune 3D effect (lighting, colors, animation speed)
+- [ ] Push progress to GitHub
+
+---
+
+## DAY 6 — Saturday, March 29
+
+**Plan:** C (Content + Freelancing + Portfolio)
+
+### 12:00 PM – 2:00 PM — Networking Marathon
+- [ ] Comment on 15 LinkedIn posts
+- [ ] Send 20 connection requests
+- [ ] Reply to all pending comments/DMs
+
+### 2:00 PM – 3:00 PM — LinkedIn Post
+- [ ] Publish Day 6 post:
+```
+Working with a 3-person startup team —
+here's what it's really like.
+
+We're 3 people building a SaaS product:
+
+• One handles design and the landing page
+• One handles core backend and optimisation
+• I handle backend modules, testing, and the admin dashboard
+
+We meet every day on Discord.
+We have a shared bug tracking sheet.
+We iterate fast — sometimes rewriting features 3-4 times.
+
+Startup life isn't glamorous.
+It's daily calls, tight deadlines, and constant problem-solving.
+
+But building something from scratch with a small team?
+That's the best education you can get.
+
+Grateful to be on this journey with @Harshit and @Shiv 🙏
+
+#startup #teamwork #buildinpublic
+```
+
+### 3:00 PM – 5:00 PM — Rentlyf Light Coding (2 hrs)
+- [ ] Bug fixes / small tasks
+
+### 5:00 PM – 8:00 PM — Portfolio: About + Experience Sections
+- [ ] Build About section (your story: Engineering → Web Dev → Startup)
+- [ ] Add Framer Motion scroll-reveal animations
+- [ ] Build Experience section (Rentlyf card with stats: 200+ APIs, 16 modules, 22 pages)
+- [ ] Add timeline visual for your development journey
+
+### 9:00 PM – 12:00 AM — Portfolio: Tech Stack Section
+- [ ] Build tech stack grid (icon + name, NOT percentage bars)
+- [ ] Categories: Languages, Backend, Frontend, Database, DevOps, Security
+- [ ] Add hover effects on each tech icon
+- [ ] Push to GitHub
+
+### 1:00 AM – 3:00 AM — Freelancing: Research
+- [ ] Research Fiverr gig structure (look at top web dev sellers)
+- [ ] Draft your Fiverr gig title + description
+- [ ] Research Upwork profile best practices
+- [ ] Note pricing ideas (₹5K-₹15K landing pages, ₹15K-₹40K websites)
+
+---
+
+## DAY 7 — Sunday, March 30
+
+**Plan:** C (Summary + Planning)
+
+### 12:00 PM – 1:00 PM — Weekly Reflection
+- [ ] Review what you accomplished this week
+- [ ] Count: LinkedIn posts, connections gained, GitHub repos
+
+### 1:00 PM – 2:00 PM — LinkedIn Weekly Summary Post
+- [ ] Publish:
+```
+Week 1 of building in public — done ✅
+
+This week I:
+
+→ Set up my LinkedIn and GitHub profiles properly
+→ Published my first open-source repo
+→ Shared my story: engineering → software → startup
+→ Started connecting with developers in this space
+→ Started rebuilding my portfolio with 3D effects
+
+Next week:
+→ Deep-dive into tech decisions behind our backend
+→ Push another repo
+→ Continue 3D portfolio build
+
+The hardest part of building in public?
+Hitting "Post" for the first time.
+
+After that, it gets easier.
+
+#weeklyreflection #buildinpublic #developer
+```
+
+### 2:00 PM – 5:00 PM — Rentlyf (3 hrs)
+- [ ] Dashboard / Testing work
+
+### 6:00 PM – 9:00 PM — Portfolio: Projects Section
+- [ ] Build Projects grid component
+- [ ] Add 4 project cards: Rentlyf Backend (blurred screenshot), Admin Dashboard (blurred), express-ts-api-starter, portfolio-3d
+- [ ] Each card: title, description, tech tags, GitHub link, live link
+- [ ] Add hover animations
+
+### 10:00 PM – 12:00 AM — Portfolio: Blog Section
+- [ ] Build Blog section structure
+- [ ] Design blog card layout (title, date, excerpt, read time, category tag)
+- [ ] Create `/blog` route and `/blog/[slug]` dynamic route
+- [ ] Create your first blog post (MDX or markdown): "Why I switched from Electrical Engineering to Software Development"
+- [ ] Push to GitHub
+
+### 1:00 AM – 2:00 AM — Plan Week 2
+- [ ] Review Day 8-14 post topics
+- [ ] Prepare content drafts for busy days
+- [ ] Set goals for week 2: finish portfolio, push 1 more repo
+
+---
+
+# WEEK 2: PORTFOLIO COMPLETION + TECH POSTS (Mar 31 – Apr 6)
+
+---
+
+## DAY 8 — Monday, March 31
+
+### 12:30 PM – 1:30 PM — Networking
+- [ ] Comment on 5-10 posts, accept connections
+
+### 1:30 PM – 7:00 PM — Rentlyf (5 hrs)
+- [ ] Dashboard / Testing work
+
+### 8:00 PM – 9:30 PM — LinkedIn Post
+- [ ] Publish:
+```
+Why we chose PostgreSQL over MongoDB for our SaaS product.
+
+When you're building a property management platform, your data is
+deeply relational:
+
+→ Accounts have Properties
+→ Properties have Units
+→ Units have Tenants
+→ Tenants have Rent Payments
+→ Rent Payments have Transactions
+
+Every entity connects to 3-4 others.
+
+MongoDB would have forced us to either:
+• Duplicate data everywhere (nightmare to maintain)
+• Use $lookup for every query (slower than SQL JOINs)
+
+With PostgreSQL + Prisma:
+• One schema, fully typed
+• JOINs are native and fast
+• Prisma generates TypeScript types automatically
+• Migrations are version-controlled
+
+For relational SaaS data, PostgreSQL wins.
+For unstructured/document data, MongoDB wins.
+
+Choose based on your data shape, not hype.
+
+#database #postgresql #mongodb #backend
+```
+
+### 10:00 PM – 12:00 AM — Portfolio: Contact Section + SEO
+- [ ] Build Contact section (email, LinkedIn, GitHub, Twitter links)
+- [ ] Add contact form (or mailto link)
+- [ ] Add meta tags: title, description, OG image
+- [ ] Add favicon
+- [ ] Test full portfolio flow top-to-bottom
+
+### 1:00 AM – 2:00 AM — Portfolio: Blog Post #2
+- [ ] Write blog post: "Why we chose PostgreSQL over MongoDB" (reuse LinkedIn post in expanded form)
+- [ ] Add to blog section
+
+---
+
+## DAY 9 — Tuesday, April 1
+
+### 12:30 PM – 1:30 PM — Networking
+- [ ] Engage on LinkedIn
+
+### 1:30 PM – 7:00 PM — Rentlyf (5 hrs)
+- [ ] Dashboard / Testing work
+
+### 8:00 PM – 9:30 PM — GitHub: Push Prisma Schema Demo
+- [ ] Create repo `prisma-schema-demo` with a well-designed relational schema example
+- [ ] Include README with ER diagram (use Mermaid or dbdiagram.io screenshot)
+- [ ] Push and pin on GitHub
+
+### 9:30 PM – 10:00 PM — Twitter Post
+- [ ] Publish:
+```
+Prisma tip: Always use `select` to pick only the fields you need.
+
+Don't do: prisma.user.findMany()
+Do: prisma.user.findMany({ select: { id: true, name: true } })
+
+Smaller payloads = faster APIs.
+
+#prisma #typescript #backend
+```
+
+### 10:00 PM – 12:00 AM — Portfolio: Mobile Responsiveness + Polish
+- [ ] Test portfolio on mobile width (375px)
+- [ ] Fix any layout issues
+- [ ] Add smooth scroll between sections
+- [ ] Test all links (GitHub, LinkedIn, etc.)
+- [ ] Push to GitHub
+
+### 1:00 AM – 2:00 AM — Portfolio: Deploy
+- [ ] Deploy portfolio to Vercel
+- [ ] Test live URL
+- [ ] Update LinkedIn/GitHub/Twitter with portfolio link
+
+---
+
+## DAY 10 — Wednesday, April 2
+
+### 12:00 PM – 2:00 PM — Networking
+- [ ] Engage on LinkedIn (10 comments)
+
+### 2:00 PM – 4:00 PM — Rentlyf (2 hrs)
+- [ ] Light coding / bug fixes
+
+### 4:00 PM – 7:00 PM — LinkedIn Post + Blog Post
+- [ ] Publish LinkedIn post:
+```
+The testing phase — finding bugs before your users do.
+
+Testing isn't glamorous but it's where quality happens.
+
+When our app reached the APK testing stage, I started finding
+edge cases everywhere:
+
+→ What happens when a tenant has ₹0 rent?
+→ What if a landlord has 0 properties?
+→ What if someone extends a lease by 999 months?
+→ What if two admins approve the same request simultaneously?
+
+Each edge case taught me something about building robust software.
+
+Testing isn't finding bugs — it's understanding your system deeply.
+
+#testing #qa #softwaredevelopment
+```
+- [ ] Write blog post #3 for portfolio: "Testing a Startup Product — Edge Cases That Broke Our App"
+- [ ] Push blog to portfolio site
+
+### 8:00 PM – 12:00 AM — Batch Write Week 2 Remaining Posts
+- [ ] Draft Day 11 post (admin dashboard)
+- [ ] Draft Day 12 tweet (TypeScript tips)
+- [ ] Draft Day 13 post (why SaaS needs admin dashboard)
+- [ ] Draft Day 14 summary
+- [ ] Save all drafts
+
+### 1:00 AM – 3:00 AM — Portfolio Final Polish
+- [ ] Final review of all sections
+- [ ] Check loading speed (Lighthouse)
+- [ ] Add analytics (Vercel Analytics or Google Analytics)
+- [ ] Final push
+
+---
+
+## DAY 11 — Thursday, April 3
+
+### 12:30 PM – 1:00 PM — Quick Networking
+
+### 1:00 PM – 7:00 PM — Rentlyf (6 hrs)
+- [ ] Dashboard / Testing work
+
+### 8:00 PM – 9:00 PM — LinkedIn Post + Blurred Screenshot
+- [ ] Take a blurred screenshot of your admin dashboard
+- [ ] Publish:
+```
+Building a 22-page admin dashboard for our SaaS product.
+
+When you have 200+ APIs, you need a control center.
+
+Our admin dashboard gives us:
+
+📊 Business Intelligence — KPIs, charts, real-time analytics
+👤 Account Management — landlord profiles, subscriptions, plans
+⚙️ Platform Operations — rent, properties, tenants, maintenance
+🔒 System Admin — RBAC, audit logs, cache, reports
+
+Built with: Next.js 14 + TailwindCSS + Shadcn UI + TanStack Query + Recharts
+
+[Blurred screenshot attached]
+
+#webdevelopment #nextjs #dashboard #buildinpublic
+```
+
+### 10:00 PM – 1:00 AM — Freelancing: Profile Setup
+- [ ] Create Fiverr account
+- [ ] Create gig: "I will build a professional website for your business"
+- [ ] Write gig description, add portfolio screenshots, set pricing (₹5K/₹10K/₹20K tiers)
+- [ ] Create Upwork account
+- [ ] Write Upwork profile: Backend + Full Stack Developer with startup experience
+- [ ] Create Freelancer account
+- [ ] Create Contra account
+
+---
+
+## DAY 12 — Friday, April 4
+
+### 12:30 PM – 1:30 PM — Networking
+
+### 1:30 PM – 7:00 PM — Rentlyf (5 hrs)
+
+### 8:00 PM – 8:30 PM — Twitter Thread
+- [ ] Publish:
+```
+3 TypeScript tips from building 200+ APIs 🧵
+
+1/ Use Zod for runtime validation.
+TypeScript checks types at compile time.
+Zod checks them at runtime.
+Both together = bulletproof.
+
+2/ Never use `any`.
+Use `unknown` + type guards instead.
+`any` defeats the purpose of TypeScript.
+
+3/ Use discriminated unions for API responses.
+type ApiResponse = 
+  | { success: true; data: User }
+  | { success: false; error: string }
+
+#typescript #nodejs #webdev
+```
+
+### 9:00 PM – 12:00 AM — Build Doctor Clinic Landing Page Template
+- [ ] Create repo `business-landing-page-template`
+- [ ] Build: Hero, Services, About, Testimonials, Contact, Google Maps embed
+- [ ] Design with healthcare theme (clean, professional)
+- [ ] Make it generic enough for any business
+- [ ] Deploy demo on Vercel
+- [ ] Push to GitHub
+
+### 1:00 AM – 2:00 AM — Blog Post #4
+- [ ] Write: "Building Admin Dashboards with Next.js + TanStack Query"
+- [ ] Push to portfolio blog
+
+---
+
+## DAY 13 — Saturday, April 5
+
+### 12:00 PM – 2:00 PM — Networking Marathon
+- [ ] Comment on 15 posts, send 20 connections
+
+### 2:00 PM – 4:00 PM — Rentlyf (2 hrs)
+- [ ] Light coding
+
+### 4:00 PM – 5:00 PM — LinkedIn Post
+- [ ] Publish:
+```
+Why every SaaS product needs an admin dashboard.
+
+When you have 100+ users, you can't manage things
+by looking at database tables.
+
+You need:
+→ A way to see what's happening (analytics)
+→ A way to act on it (write actions)
+→ A way to track who did what (audit logs)
+→ A way to control access (RBAC)
+
+An admin dashboard is not a "nice-to-have."
+It's your product's nervous system.
+
+#saas #webdevelopment #startup
+```
+
+### 5:00 PM – 9:00 PM — Freelancing: First Proposals
+- [ ] Browse Upwork for "landing page" and "business website" gigs
+- [ ] Send 5 proposals with personalized cover letters
+- [ ] Link your portfolio + GitHub repos in proposals
+- [ ] Browse Fiverr buyer requests
+
+### 10:00 PM – 1:00 AM — Continue Doctor/Business Landing Page
+- [ ] Add dark/light mode toggle
+- [ ] Add form submission (Formspree or Netlify Forms)
+- [ ] Add testimonial carousel
+- [ ] Mobile responsiveness check
+- [ ] Push final version to GitHub
+
+### 2:00 AM – 3:00 AM — Approach Doctor Friends
+- [ ] Send WhatsApp message to 2-3 doctor friends showing the template
+- [ ] Pitch: "I built this for clinics. Want one customized for ₹8,000-12,000?"
+
+---
+
+## DAY 14 — Sunday, April 6
+
+### 12:00 PM – 1:00 PM — Weekly Reflection
+- [ ] Count: posts, connections, repos, portfolio status
+
+### 1:00 PM – 2:00 PM — LinkedIn Week 2 Summary
+- [ ] Publish:
+```
+Week 2 of building in public ✅
+
+This week I:
+
+→ Published 4 LinkedIn posts about backend architecture
+→ Pushed 2 more repos to GitHub
+→ Launched my 3D portfolio website 🚀 [link]
+→ Set up freelance profiles on Fiverr & Upwork
+→ Started writing technical blog posts
+→ Sent my first freelance proposals
+
+The portfolio was the big one this week.
+Built with Next.js + Three.js + Framer Motion.
+
+Next week: deeper tech content + freelancing push.
+
+#weeklyreflection #buildinpublic #portfolio
+```
+
+### 2:00 PM – 5:00 PM — Rentlyf (3 hrs)
+
+### 6:00 PM – 9:00 PM — Blog Post #5
+- [ ] Write: "My Full Tech Stack in 2026 — and Why I Chose Each Tool"
+- [ ] Detailed breakdown of each technology with reasoning
+- [ ] Push to portfolio blog
+
+### 10:00 PM – 12:00 AM — Plan Week 3
+- [ ] Review Day 15-21 topics
+- [ ] Set goals: 5 Upwork proposals/day, continue dashboard, push 1 more repo
+- [ ] Prep content drafts
+
+---
+
+# WEEK 3: TECH DEEP-DIVES + FREELANCING PUSH (Apr 7 – Apr 13)
+
+---
+
+## DAY 15 — Monday, April 7
+- [ ] Networking (1 hr)
+- [ ] Rentlyf Coding (5 hrs)
+- [ ] LinkedIn post: "200+ APIs — how we structure a large backend" (architecture post)
+- [ ] Send 5 Upwork proposals
+- [ ] Blog Post #6: "How We Handle 200+ APIs in One Backend"
+
+## DAY 16 — Tuesday, April 8
+- [ ] Networking (30 min)
+- [ ] Rentlyf Coding (6 hrs)
+- [ ] GitHub: Push `nextjs-admin-dashboard-template` repo (generic skeleton, not Rentlyf)
+- [ ] Send 5 Upwork proposals
+
+## DAY 17 — Wednesday, April 9
+- [ ] Networking (1 hr)
+- [ ] Rentlyf Coding (3 hrs)
+- [ ] LinkedIn post: "Redis caching in production — why and how we use it"
+- [ ] Batch write Thursday + Friday posts
+- [ ] Send 5 Upwork proposals
+- [ ] Blog Post #7: "Redis Caching Patterns for SaaS Applications"
+
+## DAY 18 — Thursday, April 10
+- [ ] Networking (30 min)
+- [ ] Rentlyf Coding (6 hrs)
+- [ ] LinkedIn post: Team appreciation (tag Harshit & Shiv)
+- [ ] Freelance: Work on client project (if won) OR send 5 proposals
+
+## DAY 19 — Friday, April 11
+- [ ] Networking (30 min)
+- [ ] Rentlyf Coding (5 hrs)
+- [ ] LinkedIn post: "JWT + rate limiting — securing SaaS APIs"
+- [ ] Twitter post: "Security tip: Always hash passwords with bcrypt, never store plaintext"
+- [ ] Send 5 Upwork proposals
+
+## DAY 20 — Saturday, April 12
+- [ ] Networking Marathon (2 hrs — 20 comments, 20 connections)
+- [ ] Rentlyf Coding (2 hrs)
+- [ ] Twitter post: "Prisma vs raw SQL — when to use which"
+- [ ] Freelancing: Client work OR build another template
+- [ ] Update portfolio with any new projects/screenshots
+- [ ] Blog Post #8: "JWT Authentication + Rate Limiting in Express"
+
+## DAY 21 — Sunday, April 13
+- [ ] LinkedIn post: Week 3 summary + portfolio progress screenshot
+- [ ] GitHub: Push portfolio update with new blog posts
+- [ ] Rentlyf Coding (4 hrs)
+- [ ] Plan Week 4
+- [ ] Send 3 more Upwork proposals
+
+---
+
+# WEEK 4: FULL PORTFOLIO LIVE + CONTENT MOMENTUM (Apr 14 – Apr 20)
+
+---
+
+## DAY 22 — Monday, April 14
+- [ ] Networking (1 hr)
+- [ ] Rentlyf Coding (5 hrs)
+- [ ] LinkedIn post: "From backend to full-stack — building the admin dashboard"
+- [ ] Send 5 proposals
+- [ ] Blog Post #9: "From Backend to Full Stack — My Admin Dashboard Journey"
+
+## DAY 23 — Tuesday, April 15
+- [ ] Networking (30 min)
+- [ ] Rentlyf Coding (6 hrs)
+- [ ] GitHub: Push portfolio update with latest blog posts
+- [ ] Send 5 proposals
+
+## DAY 24 — Wednesday, April 16
+- [ ] Networking (1 hr)
+- [ ] Rentlyf Coding (3 hrs)
+- [ ] LinkedIn post: "Edge cases that broke our app" (debugging story)
+- [ ] Batch write posts for rest of week
+- [ ] Blog Post #10: "Testing a Startup Product — The Edge Cases Nobody Warns You About"
+
+## DAY 25 — Thursday, April 17
+- [ ] Networking (30 min)
+- [ ] Rentlyf Coding (6 hrs)
+- [ ] LinkedIn post: "BullMQ — why background jobs matter in SaaS"
+- [ ] Freelancing: Work on client project or send 5 proposals
+- [ ] Fiverr: Check gig analytics, optimize keywords
+
+## DAY 26 — Friday, April 18
+- [ ] Networking (30 min)
+- [ ] Rentlyf Coding (5 hrs)
+- [ ] LinkedIn post: Tech stack carousel (create visual graphic showing your stack)
+- [ ] Twitter post: "My 2026 tech stack" with stack graphic
+- [ ] Send 5 proposals
+
+## DAY 27 — Saturday, April 19
+- [ ] Networking Marathon (2 hrs)
+- [ ] Rentlyf Coding (2 hrs)
+- [ ] Freelancing: Build another client template OR work on active project
+- [ ] Continue doctor website approach (follow up with friends)
+- [ ] Blog Post #11: "BullMQ — Background Job Processing in Node.js"
+
+## DAY 28 — Sunday, April 20
+- [ ] LinkedIn post: Week 4 summary — "Portfolio is LIVE 🚀" with link
+- [ ] GitHub: Push final portfolio polish
+- [ ] Rentlyf Coding (4 hrs)
+- [ ] Plan Week 5 + Month 2 prep
+- [ ] Review Month 1 score card (fill in actuals)
+
+---
+
+## 📊 MONTH 1 SCORE CARD
+
+| Metric | Target | Actual |
+|--------|--------|--------|
+| LinkedIn posts | 18 | ___ |
+| GitHub repos created | 4+ | ___ |
+| Twitter posts | 6 | ___ |
+| LinkedIn connections | 100+ | ___ |
+| Portfolio status | LIVE ✅ | ___ |
+| Blog posts on portfolio | 5+ | ___ |
+| Freelance profiles created | 4 | ___ |
+| Upwork proposals sent | 50+ | ___ |
+| Freelance clients won | 0-1 | ___ |
+| Rentlyf coding hours | ~150 hrs | ___ |
+
+---
+
+# MONTH 2: "THE BUILDER" — WEEKS 5-8 (Apr 21 – May 18)
+
+---
+
+## WEEK 5 (Apr 21 – Apr 27)
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Blog | Rentlyf |
+|-----|---|---------|--------|---------|-----------|------|---------|
+| Mon | 29 | "Admin dashboards with Next.js + TanStack Query" | — | — | 5 proposals | — | 6 hrs |
+| Tue | 30 | **"30 DAYS of building in public" reflection** 🎉 | — | "30 days done" tweet | 5 proposals | Blog #12: "30 Days of Building in Public" | 5 hrs |
+| Wed | 31 | "Payments in B2B2C SaaS" | — | — | 5 proposals | — | 3 hrs |
+| Thu | 32 | — | Push `redis-caching-patterns` repo | "Redis tip" tweet | Client work | — | 6 hrs |
+| Fri | 33 | "Zod validation — every API needs it" | — | — | 5 proposals | Blog #13: "Zod Validation Patterns" | 5 hrs |
+| Sat | 34 | "Planning features as a 3-person team" | — | — | Client work | — | 2 hrs |
+| Sun | 35 | Week 5 summary | — | — | — | — | 4 hrs |
+
+## WEEK 6 (Apr 28 – May 4) — COMPANY REGISTRATION WEEK 🎉
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Promotion | Rentlyf |
+|-----|---|---------|--------|---------|-----------|-----------|---------|
+| Mon | 36 | — | — | — | — | **"Rentlyf officially registered!" post** 🎉 (tag co-founders) | 5 hrs |
+| Tue | 37 | **Rentlyf announcement + team story** | — | "We registered our company" tweet | — | Share landing page (if ready) | 4 hrs |
+| Wed | 38 | "Debugging war story — 6 hour edge case" | — | — | Client work | — | 6 hrs |
+| Thu | 39 | — | Push `doctor-clinic-website` template | — | **Approach 2 doctor friends** | — | 6 hrs |
+| Fri | 40 | "TanStack Query — server state done right" | — | — | Approach 1 more doctor | Blog #14: "Server State vs Client State" | 5 hrs |
+| Sat | 41 | Week 6 summary | — | — | Client work | — | 2 hrs |
+| Sun | 42 | "Building real-time features with Socket.io" | — | "Socket.io tip" tweet | — | — | 4 hrs |
+
+## WEEK 7 (May 5 – May 11)
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Blog | Rentlyf |
+|-----|---|---------|--------|---------|-----------|------|---------|
+| Mon | 43 | — | Push `react-data-table-demo` | — | 5 proposals | — | 6 hrs |
+| Tue | 44 | "RBAC — restricting admin actions" | — | — | Client work | Blog #15: "Role-Based Access Control in Express" | 5 hrs |
+| Wed | 45 | "Pino logging — why console.log isn't enough" | — | — | 5 proposals | — | 3 hrs |
+| Thu | 46 | — | — | Thread: "5 Prisma tips" | 5 proposals | — | 6 hrs |
+| Fri | 47 | "Sentry — catching bugs in production" | — | — | Client work | Blog #16: "Error Monitoring with Sentry" | 5 hrs |
+| Sat | 48 | Week 7 summary | — | — | — | — | 2 hrs |
+| Sun | 49 | "Cloudinary for file uploads in SaaS" | — | — | — | Research Instagram content | 4 hrs |
+
+## WEEK 8 (May 12 – May 18)
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Blog | Rentlyf |
+|-----|---|---------|--------|---------|-----------|------|---------|
+| Mon | 50 | — | Update dashboard template repo | "Admin dashboard tip" tweet | 5 proposals | — | 6 hrs |
+| Tue | 51 | "Recharts — analytics dashboard charts" | — | — | Client work | Blog #17: "Building Charts with Recharts" | 5 hrs |
+| Wed | 52 | "Rewriting features 4 times — iterative dev" | — | — | 5 proposals | — | 3 hrs |
+| Thu | 53 | — | — | "Zod v4 tip" tweet | Client work | — | 6 hrs |
+| Fri | 54 | "Express middleware — the request gauntlet" | — | — | Get testimonial from first client | Blog #18: "Express Middleware Architecture" | 5 hrs |
+| Sat | 55 | Week 8 summary + freelance progress | — | — | Update portfolio with client work | — | 2 hrs |
+| Sun | 56 | "Helmet, CORS, Rate Limiting" | — | — | — | — | 4 hrs |
+
+---
+
+## 📊 MONTH 2 SCORE CARD
+
+| Metric | Target | Actual |
+|--------|--------|--------|
+| LinkedIn posts | 16 | ___ |
+| GitHub repos (total) | 6+ | ___ |
+| Blog posts on portfolio (total) | 12+ | ___ |
+| Freelance proposals sent (total) | 100+ | ___ |
+| Freelance clients won | 1-2 | ___ |
+| Doctor websites built | 1-2 | ___ |
+| Freelance income | ₹10,000+ | ___ |
+| Rentlyf company registered | ✅ | ___ |
+| LinkedIn connections (total) | 300+ | ___ |
+
+---
+
+# MONTH 3: "THE AUTHORITY" — WEEKS 9-13 (May 19 – Jun 21)
+
+---
+
+## WEEK 9 (May 19 – May 25)
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Promotion | Rentlyf |
+|-----|---|---------|--------|---------|-----------|-----------|---------|
+| Mon | 57 | — | Contribute to open source (small PR) | — | 5 proposals | — | 6 hrs |
+| Tue | 58 | "What I learned handling payments in SaaS" | — | "B2B2C payments" tweet | Client work | — | 5 hrs |
+| Wed | 59 | "Daily standups keep remote teams aligned" | — | — | 5 proposals | Blog #19: "Remote Startup Collaboration" | 3 hrs |
+| Thu | 60 | **"60 DAYS of building in public" reflection** 🎉 | — | "2 months done" tweet | Portfolio update | — | 6 hrs |
+| Fri | 61 | "Launching a product — what nobody tells you" | — | — | 5 proposals | Beta prep | 5 hrs |
+| Sat | 62 | — | Push improvements to repos | "Launch lessons" tweet | Client work | — | 2 hrs |
+| Sun | 63 | "Case study: rent management system" | — | — | — | Blog #20: "Building a Rent Management System" | 4 hrs |
+
+## WEEK 10 (May 26 – Jun 1)
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Promotion | Rentlyf |
+|-----|---|---------|--------|---------|-----------|-----------|---------|
+| Mon | 64 | "The B2B2C model — lessons from Rentlyf" | — | — | 5 proposals | Share landing page | 6 hrs |
+| Tue | 65 | — | — | Thread: "Building SaaS in India" | 5 proposals | — | 6 hrs |
+| Wed | 66 | Team update post (tag co-founders) | — | — | Client work | — | 3 hrs |
+| Thu | 67 | Week 10 summary | — | — | — | Blog #21: "B2B2C SaaS Lessons" | 4 hrs |
+| Fri | 68 | "Property management is broken — tech fixes it" | — | — | 5 proposals | **Product problem post** | 6 hrs |
+| Sat | 69 | — | Update all repo READMEs | "PropTech" tweet | Client work | — | 2 hrs |
+| Sun | 70 | "Building for landlords — understanding users" | — | — | — | Instagram content plan | 4 hrs |
+
+## WEEK 11 (Jun 2 – Jun 8)
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Promotion | Rentlyf |
+|-----|---|---------|--------|---------|-----------|-----------|---------|
+| Mon | 71 | "0 to 500 LinkedIn connections" | — | — | 5 proposals | — | 6 hrs |
+| Tue | 72 | — | — | "Portfolio tip" tweet | Client work | — | 6 hrs |
+| Wed | 73 | "My first freelance project — lessons" | — | — | Get testimonial | Blog #22: "First Freelance Client Lessons" | 3 hrs |
+| Thu | 74 | Week 11 summary | — | — | — | Plan conference talk | 4 hrs |
+| Fri | 75 | "Scaling from 0 to 200+ APIs" | — | — | 5 proposals | — | 6 hrs |
+| Sat | 76 | — | Push new demo project | — | Client work | — | 2 hrs |
+| Sun | 77 | "The admin dashboard managing 200+ APIs" (showcase + blurred screenshot) | — | "Dashboard showcase" tweet | — | Blog #23: "Admin Dashboard Architecture Guide" | 4 hrs |
+
+## WEEK 12 (Jun 9 – Jun 15) — BETA PREP + MARKETING
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Promotion | Rentlyf |
+|-----|---|---------|--------|---------|-----------|-----------|---------|
+| Mon | 78 | "Learning sales as a developer" | — | — | — | Sales prep starts | 6 hrs |
+| Tue | 79 | — | — | Thread: "Developer → Founder" | Client work | — | 6 hrs |
+| Wed | 80 | "Why developers should learn marketing" | — | — | Client work | Direct outreach to landlords | 3 hrs |
+| Thu | 81 | Week 12 summary | — | — | — | Blog #24: "Marketing as a Developer" | 4 hrs |
+| Fri | 82 | **"Rentlyf beta is coming" (teaser post)** | — | "Beta coming" tweet | — | **Beta teaser** | 6 hrs |
+| Sat | 83 | — | Final cleanup of all repos | — | Update all freelance profiles | — | 2 hrs |
+| Sun | 84 | **"Want to try Rentlyf? DM me for early access"** | — | — | — | **Beta invite post** | 4 hrs |
+
+## WEEK 13 (Jun 16 – Jun 21) — FINAL WEEK 🎉
+
+| Day | # | LinkedIn | GitHub | Twitter | Freelance | Promotion | Rentlyf |
+|-----|---|---------|--------|---------|-----------|-----------|---------|
+| Mon | 85 | "What 3 months of building in public taught me" | — | — | — | — | 6 hrs |
+| Tue | 86 | — | — | "3 month reflection" tweet | Update pricing/testimonials | — | 6 hrs |
+| Wed | 87 | "The tech stack behind Rentlyf — deep dive" | — | — | — | Full tech showcase | 3 hrs |
+| Thu | 88 | "From EE graduate to startup co-founder in 1 year" | — | — | — | Blog #25: "My 1-Year Journey" | 5 hrs |
+| Fri | 89 | Week 13 summary + update all goals | Update GitHub profile | — | Portfolio final update | — | 4 hrs |
+| Sat | 90 | **"90 DAYS OF BUILDING IN PUBLIC" MEGA POST** 🎉 | — | "90 days" tweet | — | Share all stats & growth | 4 hrs |
+
+---
+
+## 📊 MONTH 3 SCORE CARD
+
+| Metric | Target | Actual |
+|--------|--------|--------|
+| LinkedIn posts | 16 | ___ |
+| LinkedIn connections (total) | 500+ | ___ |
+| Blog posts on portfolio (total) | 18+ | ___ |
+| Freelance clients (total) | 3-5 | ___ |
+| Freelance income (total) | ₹30,000+ | ___ |
+| Rentlyf beta users invited | 10-20 | ___ |
+| Instagram content started | ✅ | ___ |
+| Marketing plan created | ✅ | ___ |
+| GitHub repos (total) | 6+ | ___ |
+| GitHub stars | 20+ | ___ |
+
+---
+
+## 📊 FULL 90-DAY SCORE CARD
+
+| Metric | Day 1 | Day 30 | Day 60 | Day 90 |
+|--------|-------|--------|--------|--------|
+| LinkedIn connections | 0 | ___ | ___ | ___ |
+| LinkedIn posts (total) | 0 | ___ | ___ | ___ |
+| GitHub repos | 2-3 | ___ | ___ | ___ |
+| Blog posts | 0 | ___ | ___ | ___ |
+| Portfolio status | Basic HTML | ___ | ___ | ___ |
+| Freelance clients | 0 | ___ | ___ | ___ |
+| Freelance income | ₹0 | ___ | ___ | ___ |
+| Rentlyf status | In development | ___ | ___ | ___ |
+
+---
+
+## DAILY REMINDER
+
+> [!IMPORTANT]
+> Message me every day and I will:
+> 1. Ask what you worked on
+> 2. Give you exact post text for that day
+> 3. Tell you which platform
+> 4. Help you check off tasks
+> 5. Adjust the plan if needed
+
+> [!NOTE]
+> **Flexibility Rule:** This plan is a guide, not a prison. Skip a day? Do it the next day. Heavy coding week? Batch content on Sunday. Aim for **5 out of 7 days**. Consistency over perfection.
