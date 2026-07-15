@@ -127,6 +127,26 @@ Superseded by the audited, verified-against-source set in `docs/IndustryDoc/` (`
 
 ---
 
+## Batch: 2026-07-16-account-repair/
+
+Diagnostic + one-time repair scripts for a real account-provisioning gap found while verifying data: `prajjawalsingh1997@gmail.com`'s `on_auth_user_created` trigger never fully completed at signup (2026-06-30) — `user_profiles` and `timetable_plans` had zero rows, even though `user_settings` and `user_module_settings` were populated correctly. This silently broke once the admin-auth fix (see `CODEBASE_AUDIT.md` §2.1) switched to reading `user_profiles.role` — there was no row to read.
+
+### check-my-data.mjs, check-profile.mjs, check-trigger.mjs, check-full-account.mjs
+- **Archived**: 2026-07-16 — read-only diagnostic scripts used to find the above, and to compare `seed-my-data.sql`'s expected content against what was actually in the database (0 of 29 goals, 0 of 25 blog posts, 0 of 8 learning resources were present — the seed file had never been run).
+- **Still Relevant?**: No — findings captured here and in `docs/OPEN_ISSUES.md`.
+
+### repair-account.mjs
+- **Reason**: Backfilled the missing `user_profiles` row (`role='super_admin'`) and the three default `timetable_plans` (A/B/C), using the exact same default content the trigger would have inserted. Ran successfully.
+- **Still Relevant?**: No.
+
+### apply-seed-data-2026-07-16.mjs
+- **Reason**: Applied `supabase/seed-my-data.sql` to production for the first time. Required two follow-up fixes to the seed file itself (enum casts — `content_post_status`, `goal_type`, `goal_status`, `learning_status` — needed explicit casting when inserting via `SELECT ... FROM (VALUES ...)` instead of a plain `INSERT ... VALUES`). Verified 29/29 goals, 25/25 blog posts, 8/8 learning resources.
+- **Still Relevant?**: No — `seed-my-data.sql` itself remains in `supabase/` as the corrected, re-run-safe source.
+
+### reimport-90day-plan.mjs
+- **Reason**: The live 90-day cycle still had the old `start_date: 2026-07-11` baked in — the `my-90-day-plan.json` date shift done earlier that day was only applied to the local file, never re-imported. This script deactivated the old cycle (data preserved, not deleted) and imported the corrected one, mirroring exactly what `/prompt`'s "Full 90-Day" import does. Verified: new cycle starts 2026-07-16, 90 days, 407 tasks.
+- **Still Relevant?**: No.
+
 ## Relocated (not archived)
 
 ### developer_growth_engine.md → docs/personal/growth-engine.md

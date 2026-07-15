@@ -2,6 +2,8 @@
 
 A personal life operating system built on a **90-Day Developer Growth Engine**. Track goals, habits, finances, CRM leads, health, learning, content, freelance work, and more — all in one cloud-synced dashboard.
 
+**Live:** [my-helping-hand.vercel.app](https://my-helping-hand.vercel.app) — responsive down to phone-sized screens; add it to your home screen from Safari/Chrome for an app-like shortcut.
+
 ## ✨ Modules (18 + Admin)
 
 | Module | Purpose |
@@ -119,7 +121,9 @@ All data is stored in **Supabase** (PostgreSQL) with Row Level Security (RLS) �
 
 ## ☁️ Deployment
 
-Deployed on **Vercel**, auto-deploying from the `main` branch. In Vercel → Project → Settings → Environment Variables, set the same three variables as `.env.local` (Production + Preview), then set Supabase Auth's **Site URL** and **Redirect URLs** to your Vercel domain.
+Deployed on **Vercel** at [my-helping-hand.vercel.app](https://my-helping-hand.vercel.app), auto-deploying from the `main` branch. In Vercel → Project → Settings → Environment Variables, set the same three variables as `.env.local` (Production + Preview), then set Supabase Auth's **Site URL** and **Redirect URLs** to your Vercel domain.
+
+For direct database access (one-off scripts, migrations run outside the SQL Editor), Supabase's `Connect` dialog offers a **direct connection** (IPv6-only) and a **pooler connection** (IPv4-compatible, works from any network) — use the pooler string for `DATABASE_URL` unless you know your network has IPv6 out.
 
 ## 👤 Author
 
