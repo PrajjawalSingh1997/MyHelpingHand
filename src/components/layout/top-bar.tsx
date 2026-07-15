@@ -73,16 +73,16 @@ export function TopBar({ userId, displayName }: TopBarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[#2D2D3F] bg-[#0A0A0F]/80 px-6 backdrop-blur-md">
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-[#64748B]">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-[#2D2D3F] bg-[#0A0A0F]/80 pl-16 pr-3 backdrop-blur-md md:px-6">
+      <div className="flex items-center gap-3 overflow-hidden">
+        <span className="truncate text-xs text-[#64748B] sm:text-sm">
           {mounted ? format(new Date(), "EEEE, MMMM d, yyyy") : ""}
         </span>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-none items-center gap-2 sm:gap-3">
         {streak > 0 && (
-          <div className="flex items-center gap-1.5 rounded-full bg-[#FF6B6B]/10 px-3 py-1">
+          <div className="flex items-center gap-1.5 rounded-full bg-[#FF6B6B]/10 px-2.5 py-1 sm:px-3">
             <Flame className="h-4 w-4 text-[#FF6B6B]" />
             <span className="text-xs font-semibold text-[#FF6B6B]">{streak}d streak</span>
           </div>

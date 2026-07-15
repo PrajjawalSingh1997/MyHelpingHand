@@ -48,7 +48,7 @@ function ProjectForm({ initial, onSave, onCancel }: {
 
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="flex-1">
           <label className="label">Project Title</label>
           <input value={f.title} onChange={e => setF({ ...f, title: e.target.value })} className="input mt-1 w-full" placeholder="Website redesign..." />
@@ -58,7 +58,7 @@ function ProjectForm({ initial, onSave, onCancel }: {
           <input value={f.client_name ?? ''} onChange={e => setF({ ...f, client_name: e.target.value })} className="input mt-1 w-full" />
         </div>
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="w-36">
           <label className="label">Platform</label>
           <select value={f.platform ?? ''} onChange={e => setF({ ...f, platform: e.target.value })} className="input mt-1 w-full">
@@ -172,7 +172,7 @@ export default function FreelancePage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { label: 'Total Earned', value: `₹${totalEarned.toLocaleString('en-IN')}`, sub: 'from completed projects' },
           { label: 'Active Pipeline', value: `₹${activeRevenue.toLocaleString('en-IN')}`, sub: 'from active projects' },

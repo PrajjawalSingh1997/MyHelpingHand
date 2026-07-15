@@ -68,7 +68,7 @@ function GoalForm({ initial, onSave, onCancel }: {
         <textarea value={f.description ?? ''} onChange={e => setF({ ...f, description: e.target.value })}
           rows={2} className="input mt-1 w-full resize-none" />
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="flex-1">
           <label className="label">Type</label>
           <select value={f.goal_type} onChange={e => setF({ ...f, goal_type: e.target.value as GoalType })} className="input mt-1 w-full">
@@ -82,7 +82,7 @@ function GoalForm({ initial, onSave, onCancel }: {
           </select>
         </div>
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="flex-1">
           <label className="label">Target</label>
           <input value={String(f.target_value ?? '')} onChange={e => setF({ ...f, target_value: e.target.value })} className="input mt-1 w-full" placeholder="10" />

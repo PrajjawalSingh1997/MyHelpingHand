@@ -54,7 +54,7 @@ function LeadForm({ initial, onSave, onCancel }: {
 
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="flex-1">
           <label className="label">Name</label>
           <input value={f.name} onChange={e => setF({ ...f, name: e.target.value })} className="input mt-1 w-full" placeholder="John Doe" />
@@ -70,7 +70,7 @@ function LeadForm({ initial, onSave, onCancel }: {
           </select>
         </div>
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="flex-1">
           <label className="label">Email</label>
           <input type="email" value={f.email ?? ''} onChange={e => setF({ ...f, email: e.target.value })} className="input mt-1 w-full" />
@@ -88,7 +88,7 @@ function LeadForm({ initial, onSave, onCancel }: {
           <input type="number" value={f.deal_value} onChange={e => setF({ ...f, deal_value: e.target.value })} className="input mt-1 w-full" />
         </div>
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="flex-1">
           <label className="label">Source</label>
           <select value={f.source ?? ''} onChange={e => setF({ ...f, source: e.target.value })} className="input mt-1 w-full">
@@ -185,7 +185,7 @@ function ColdCallLog({ userId, leads }: { userId: string; leads: CrmLead[] }) {
       {(adding || editingId) && (
         <div className="mb-4 space-y-3 rounded-xl p-4" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
           <h4 className="text-xs font-bold mb-2" style={{ color: 'var(--text)' }}>{editingId ? 'Edit Call Log' : 'New Call Log'}</h4>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <div><label className="label">Date</label><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="input mt-1" /></div>
             <div className="flex-1"><label className="label">Name</label><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="input mt-1 w-full" /></div>
             <div className="flex-1"><label className="label">Phone</label><input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="input mt-1 w-full" /></div>
@@ -336,7 +336,7 @@ export default function CrmPage() {
       )}
 
       {/* Pipeline kanban summary */}
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
         {STAGES.map(stage => (
           <button key={stage} onClick={() => setFilterStage(filterStage === stage ? 'all' : stage)}
             className="rounded-xl p-3 text-center transition-all"

@@ -207,7 +207,7 @@ export default function ProgressPage() {
       ) : (
         <>
           {/* Summary cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
           { icon: <Flame size={18} style={{ color: 'var(--danger)' }} />, label: 'Streak', value: `${streak}d` },
           { icon: <CheckCircle size={18} style={{ color: 'var(--success)' }} />, label: 'Completed', value: completedTasks },

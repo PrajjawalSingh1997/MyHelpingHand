@@ -37,7 +37,7 @@ function EntryForm({ initial, onSave, onCancel }: {
 
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div>
           <label className="label">Date</label>
           <input type="date" value={f.date} onChange={e => setF({ ...f, date: e.target.value })} className="input mt-1" />
@@ -212,7 +212,7 @@ export default function FinancePage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { icon: <TrendingUp size={18} style={{ color: 'var(--success)' }} />, label: 'Total Income', value: totalIncome, color: 'var(--success)' },
           { icon: <TrendingDown size={18} style={{ color: 'var(--danger)' }} />, label: 'Total Expense', value: totalExpense, color: 'var(--danger)' },
@@ -255,7 +255,7 @@ export default function FinancePage() {
           <div className="h-full rounded-full transition-all" style={{ width: `${debtPct}%`, background: 'linear-gradient(to right, #ff6b6b, #f43f5e)' }} />
         </div>
         <p className="mb-3 text-xs" style={{ color: 'var(--text-muted)' }}>{debtPct}% repaid (₹{(debtTotal - currentDebt).toLocaleString('en-IN')} paid)</p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <input type="number" value={debtPaid} onChange={e => setDebtPaid(e.target.value)} className="input flex-1" placeholder="Amount paid this time (₹)" />
           <button onClick={saveDebt} disabled={debtSaving || !debtPaid} className="btn-primary text-sm" style={{ opacity: debtSaving || !debtPaid ? 0.6 : 1 }}>
             {debtSaving ? 'Saving...' : 'Log Payment'}

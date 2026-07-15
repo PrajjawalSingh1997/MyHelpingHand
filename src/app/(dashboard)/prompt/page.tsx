@@ -405,7 +405,7 @@ export default function PromptPage() {
               {promptMode === 'full' ? PROMPT_FULL : chunkPromptText}
             </pre>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <CopyButton text={promptMode === 'full' ? PROMPT_FULL : chunkPromptText}
               label={promptMode === 'full' ? 'Copy Full Prompt' : `Copy Days ${chunkStart}–${chunkEnd} Prompt`} />
             <button onClick={() => setStep(2)} className="btn-ghost text-sm flex items-center gap-1">
@@ -432,7 +432,7 @@ export default function PromptPage() {
               <p>Copy the entire JSON response (including the ``` fences if present). Then click Next.</p>
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button onClick={() => setStep(1)} className="btn-ghost text-sm">← Back</button>
             <button onClick={() => setStep(3)} className="btn-primary text-sm flex items-center gap-1">
               Next: Import <ChevronRight size={14} />
@@ -505,7 +505,7 @@ export default function PromptPage() {
               : `Paste the full JSON here...\n\n{\n  "cycle": {\n    "title": "...",\n    ...\n  },\n  "days": [...]\n}`}
           />
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button onClick={() => setStep(2)} className="btn-ghost text-sm">← Back</button>
             <button onClick={importPlan} disabled={importing || !jsonInput.trim()}
               className="btn-primary flex items-center gap-2 text-sm"

@@ -179,7 +179,7 @@ export default function AdminPage() {
       )}
 
       {/* Search */}
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <input value={search} onChange={e => setSearch(e.target.value)} className="input flex-1" placeholder="Search users by email or name..." />
         <button onClick={() => {
           if (selected.size === filteredUsers.length) setSelected(new Set())

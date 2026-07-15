@@ -29,7 +29,7 @@ function HabitForm({ initial, onSave, onCancel }: {
 
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="w-16">
           <label className="label">Emoji</label>
           <input type="text" value={f.emoji} onChange={e => setF({ ...f, emoji: e.target.value })} className="input mt-1 w-full text-center" maxLength={2} />

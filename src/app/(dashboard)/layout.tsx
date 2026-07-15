@@ -38,9 +38,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
         displayName={profile?.display_name ?? user.email ?? 'User'}
         isAdmin={profile?.role === 'super_admin'}
       />
-      <main className="ml-[240px] flex-1">
+      <main className="min-w-0 flex-1 md:ml-[240px]">
         <TopBar userId={user.id} displayName={profile?.display_name ?? ''} />
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <ToastProvider>{children}</ToastProvider>
         </div>
       </main>

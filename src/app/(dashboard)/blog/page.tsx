@@ -39,7 +39,7 @@ function PostForm({ initial, onSave, onCancel }: {
 
   return (
     <div className="space-y-3 rounded-xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <div className="flex-1">
           <label className="label">Title / Topic</label>
           <input value={f.title} onChange={e => setF({ ...f, title: e.target.value })} className="input mt-1 w-full" placeholder="Blog post title..." />

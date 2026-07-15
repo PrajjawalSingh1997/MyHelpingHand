@@ -163,7 +163,7 @@ export default function SettingsPage() {
           <label className="label">Bio</label>
           <textarea value={profile.bio ?? ''} onChange={e => setProfile({ ...profile, bio: e.target.value })} rows={2} className="input mt-1 w-full resize-none" placeholder="Tell us about yourself..." />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="label">LinkedIn URL</label>
             <input value={profile.linkedin_url ?? ''} onChange={e => setProfile({ ...profile, linkedin_url: e.target.value })} className="input mt-1 w-full" placeholder="https://linkedin.com/in/..." />
@@ -193,7 +193,7 @@ export default function SettingsPage() {
         <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Preferences</h2>
         <div>
           <label className="label mb-2 block">Theme</label>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             {['dark', 'light', 'system'].map(t => (
               <label key={t} className="flex cursor-pointer items-center gap-2 text-sm" style={{ color: 'var(--text)' }}>
                 <input type="radio" name="theme" value={t} checked={settings.theme === t}
@@ -207,7 +207,7 @@ export default function SettingsPage() {
             ))}
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <div className="flex-1">
             <label className="label">Timezone</label>
             <select value={settings.timezone} onChange={e => setSettings({ ...settings, timezone: e.target.value })} className="input mt-1 w-full">
@@ -235,7 +235,7 @@ export default function SettingsPage() {
       {/* Finance Configuration */}
       <div className="card space-y-4">
         <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Finance Configuration</h2>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <div className="flex-1">
             <label className="label">Total Debt (₹)</label>
             <input type="number" value={settings.debt_total} onChange={e => setSettings({ ...settings, debt_total: parseFloat(e.target.value) || 0 })} className="input mt-1 w-full" placeholder="80000" />
@@ -254,7 +254,7 @@ export default function SettingsPage() {
       {/* Password */}
       <div className="card space-y-4">
         <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Change Password</h2>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <div className="flex-1">
             <label className="label">New Password</label>
             <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="input mt-1 w-full" placeholder="Min. 8 characters" />

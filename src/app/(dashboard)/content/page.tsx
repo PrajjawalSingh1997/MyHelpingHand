@@ -61,7 +61,7 @@ function PostModal({ initial, onSave, onClose }: {
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)' }}>
       <div className="w-full max-w-xl rounded-2xl p-6 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>{initial?.id ? 'Edit Post' : 'New Content'}</h3>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <div className="flex-1">
             <label className="label">Title / Idea</label>
             <input value={f.title} onChange={e => setF({ ...f, title: e.target.value })} className="input mt-1 w-full" />
@@ -94,7 +94,7 @@ function PostModal({ initial, onSave, onClose }: {
           <label className="label">Content / Body</label>
           <textarea value={f.content ?? ''} onChange={e => setF({ ...f, content: e.target.value })} rows={5} className="input mt-1 w-full resize-none text-xs" placeholder="Write your post here..." />
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <div className="flex-1">
             <label className="label">Tags</label>
             <input value={f.tags ?? ''} onChange={e => setF({ ...f, tags: e.target.value })} className="input mt-1 w-full" placeholder="#tech #webdev" />

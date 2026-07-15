@@ -128,7 +128,7 @@ export default function HealthPage() {
       </div>
 
       {/* Summary stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
           { icon: <Moon size={18} style={{ color: '#818cf8' }} />, label: 'Avg Sleep', value: `${avgSleep.toFixed(1)}h`, sub: 'last 14 days' },
           { icon: <Droplets size={18} style={{ color: '#38bdf8' }} />, label: 'Avg Water', value: `${avgWater.toFixed(1)} gl`, sub: 'last 14 days' },
@@ -215,7 +215,7 @@ export default function HealthPage() {
           </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <div className="w-24">
             <label className="label">Ex. Mins</label>
             <input type="number" value={form.exercise_minutes} onChange={e => setForm({ ...form, exercise_minutes: e.target.value })} className="input mt-1 w-full" placeholder="45" />
